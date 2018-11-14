@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="ltl2aut">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/ltl2aut.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

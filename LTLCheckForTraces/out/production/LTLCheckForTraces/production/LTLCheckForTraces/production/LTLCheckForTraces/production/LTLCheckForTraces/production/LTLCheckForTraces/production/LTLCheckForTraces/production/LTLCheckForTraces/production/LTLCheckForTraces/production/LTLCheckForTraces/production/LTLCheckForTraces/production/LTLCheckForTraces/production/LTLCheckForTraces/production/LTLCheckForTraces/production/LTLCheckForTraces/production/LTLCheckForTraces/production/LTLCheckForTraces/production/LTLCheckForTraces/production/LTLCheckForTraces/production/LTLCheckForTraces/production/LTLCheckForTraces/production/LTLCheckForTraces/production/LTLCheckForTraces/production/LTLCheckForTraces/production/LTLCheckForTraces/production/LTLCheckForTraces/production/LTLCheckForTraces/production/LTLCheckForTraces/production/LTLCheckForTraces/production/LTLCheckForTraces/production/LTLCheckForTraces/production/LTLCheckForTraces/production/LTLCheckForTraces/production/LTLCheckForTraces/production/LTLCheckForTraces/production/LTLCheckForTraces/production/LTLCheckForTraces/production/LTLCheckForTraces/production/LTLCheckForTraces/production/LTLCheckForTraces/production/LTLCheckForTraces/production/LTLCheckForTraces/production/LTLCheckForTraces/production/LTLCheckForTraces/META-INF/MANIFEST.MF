@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: StackEntryPoint
-Class-Path: py4j0.10.4.jar
