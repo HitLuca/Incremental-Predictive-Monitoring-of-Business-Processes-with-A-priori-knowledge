@@ -5,31 +5,28 @@ This file was created to manage running of experiments.
 """
 
 
-# from inference_algorithms import _6_evaluate_baseline_SUFFIX_only
-# from inference_algorithms import _11_cycl_pro_SUFFIX_only
+from inference_algorithms import _6_evaluate_baseline_SUFFIX_only
+from inference_algorithms import _6_evaluate_baseline_SUFFIX_and_group
 
-# from inference_algorithms import _6_evaluate_baseline_SUFFIX_and_group
-# from inference_algorithms import _11_cycl_pro_SUFFIX_resource_LTL
-# from inference_algorithms import _11_cycl_pro_SUFFIX_declare_smart_queue
+from inference_algorithms import _11_cycl_pro_SUFFIX_only
+from inference_algorithms import _11_cycl_pro_SUFFIX_resource_LTL
 
-# from shared_variables import activateSettings, eventlog
-# from train import train
-# from train_with_data import train_with_data
+from inference_algorithms import _11_cycl_pro_SUFFIX_declare_smart_queue
+
+import train, train_with_data
 
 # formula_used = "WEAK"
 # formula_used = "STRONG"
-# logNumber = 11
+logNumber = 3
 
-# train()
-# train_with_data()
+train.train(logNumber)
+# train_with_data.train_with_data(logNumber)
 
-# CF stands for Control Flow
-# CFR stands for Control Flow + Resource
-# They indicate which RNN model should be used for the inference algorithm
 
-# _6_evaluate_baseline_SUFFIX_only.run_experiments(12, "STRONG", "CF")
-# _11_cycl_pro_SUFFIX_only.run_experiments(12, "STRONG", "CF")
+# _6_evaluate_baseline_SUFFIX_only.run_experiments(logNumber, "STRONG", "CF")
+# _6_evaluate_baseline_SUFFIX_and_group.run_experiments(logNumber, "STRONG", "CFR")
 
-# _6_evaluate_baseline_SUFFIX_and_group.run_experiments(12, "STRONG", "CFR")
-# _11_cycl_pro_SUFFIX_resource_LTL.run_experiments(13, "WEAK", "CFR")
-# _11_cycl_pro_SUFFIX_declare_smart_queue.run_experiments(12, "STRONG", "CFR")
+# _11_cycl_pro_SUFFIX_only.run_experiments(logNumber, "STRONG", "CF")
+# _11_cycl_pro_SUFFIX_resource_LTL.run_experiments(logNumber, "STRONG", "CFR")
+
+# _11_cycl_pro_SUFFIX_declare_smart_queue.run_experiments(logNumber, "STRONG", "CFR")

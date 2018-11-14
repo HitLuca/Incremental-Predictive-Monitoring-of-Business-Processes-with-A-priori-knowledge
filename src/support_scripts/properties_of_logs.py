@@ -1,17 +1,17 @@
-from os import listdir
-from os.path import isfile, join
+import copy
 import csv
 import time
-import copy
-import datetime
+from datetime import datetime
+from os import listdir
+from os.path import isfile, join
 
 import numpy as np
-from datetime import datetime, timedelta
-from shared_variables import getUnicode_fromInt
-from support_scripts.prepare_data import repetitions
 import statistics
-onlyfiles = [f for f in listdir("../../data/") if isfile(join("../../data/", f))]
+from support_scripts.prepare_data import repetitions
 
+from shared_variables import getUnicode_fromInt
+
+onlyfiles = [f for f in listdir("../../data/") if isfile(join("../../data/", f))]
 
 for i in range(len(onlyfiles)):
     csvfile = open('../../data/%s' % onlyfiles[i], 'r')
@@ -70,11 +70,11 @@ for i in range(len(onlyfiles)):
     numlines += 1
 
     divisor = np.mean([item for sublist in timeseqs for item in sublist])
-    #print('divisor: {}'.format(divisor))
+    # print('divisor: {}'.format(divisor))
     divisor2 = np.mean([item for sublist in timeseqs2 for item in sublist])
-    #print('divisor2: {}'.format(divisor2))
+    # print('divisor2: {}'.format(divisor2))
     divisor3 = np.mean(map(lambda x: np.mean(map(lambda y: x[len(x) - 1] - y, x)), timeseqs2))
-    #print('divisor3: {}'.format(divisor3))
+    # print('divisor3: {}'.format(divisor3))
 
     elems_per_fold = int(round(numlines / 3))
 
@@ -92,12 +92,12 @@ for i in range(len(onlyfiles)):
     chars.sort()
     target_chars = copy.copy(chars)
     chars.remove('!')
-    #print('total chars: {}, target chars: {}'.format(len(chars), len(target_chars)))
+    # print('total chars: {}, target chars: {}'.format(len(chars), len(target_chars)))
     char_indices = dict((c, i) for i, c in enumerate(chars))
     indices_char = dict((i, c) for i, c in enumerate(chars))
     target_char_indices = dict((c, i) for i, c in enumerate(target_chars))
     target_indices_char = dict((i, c) for i, c in enumerate(target_chars))
-    #print(indices_char)
+    # print(indices_char)
 
     number = 0
     numberOfCycles = 0
@@ -108,10 +108,10 @@ for i in range(len(onlyfiles)):
         rep = list(repetitions(line))
         number += len(lines[j])
         lenMedian.append(len(lines[j]))
-        for k in range (len(rep)):
+        for k in range(len(rep)):
             numberOfCycles += 1
             averageLengthOfCycle += rep[k][1]
-        #print rep
+            # print rep
 
     averageLengthOfCycle /= float(numberOfCycles)
     averageNumberOfCyclesPerTrace = float(numberOfCycles) / float(len(lines))
@@ -121,7 +121,7 @@ for i in range(len(onlyfiles)):
     print "```File name: " + str(onlyfiles[i])
     print "```Number of traces: " + str(len(lines))
     print "```Average trace length: " + str(number)
-    print "```Nubmer of cases: " + str (len(target_indices_char))
+    print "```Nubmer of cases: " + str(len(target_indices_char))
     print "`````Average number of cycles per trace: " + str(averageNumberOfCyclesPerTrace)
     print "`````Average length of the cycle: " + str(averageLengthOfCycle)
     print "``@@`` Median length of the trace:  " + str(statistics.median(lenMedian))

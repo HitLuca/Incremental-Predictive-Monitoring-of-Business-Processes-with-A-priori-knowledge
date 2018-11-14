@@ -4,16 +4,16 @@ java src that checks the Declare formula compliance with given trace
 
 """
 
-
-from py4j.java_gateway import JavaGateway
-from shared_variables import get_int_from_unicode
 from py4j.java_collections import ListConverter
+from py4j.java_gateway import JavaGateway
+
+from shared_variables import get_int_from_unicode
 
 gateway = JavaGateway()
 verificator_app = gateway.entry_point
 
-def verify_with_data(model_file, trace_id, activities, groups, times, prefix=0):
 
+def verify_with_data(model_file, trace_id, activities, groups, times, prefix=0):
     activities_java = gateway.jvm.java.util.ArrayList()
     groups_java = gateway.jvm.java.util.ArrayList()
     times_java = gateway.jvm.java.util.ArrayList()

@@ -6,17 +6,19 @@ The script is expanded to the resource attribute
 """
 
 from __future__ import division
-from Queue import PriorityQueue
-from datetime import datetime
-from itertools import izip
-from formula_verificator import verify_with_data, verify_formula_as_compliant
-from shared_variables import get_unicode_from_int
 
 import copy
 import csv
 import re
 import time
+from Queue import PriorityQueue
+from datetime import datetime
+from itertools import izip
+
 import numpy as np
+from formula_verificator import verify_with_data, verify_formula_as_compliant
+
+from shared_variables import get_unicode_from_int
 
 
 def prepare_testing_data(eventlog):
@@ -136,25 +138,25 @@ def prepare_testing_data(eventlog):
     predict_size = maxlen
 
     return lines, \
-        lines_id, \
-        lines_group, \
-        lines_t, \
-        lines_t2, \
-        lines_t3, \
-        lines_t4, \
-        maxlen, \
-        chars, \
-        chars_group, \
-        char_indices, \
-        char_indices_group, \
-        divisor, \
-        divisor2, \
-        divisor3, \
-        predict_size, \
-        target_indices_char, \
-        target_indices_char_group, \
-        target_char_indices, \
-        target_char_indices_group
+           lines_id, \
+           lines_group, \
+           lines_t, \
+           lines_t2, \
+           lines_t3, \
+           lines_t4, \
+           maxlen, \
+           chars, \
+           chars_group, \
+           char_indices, \
+           char_indices_group, \
+           divisor, \
+           divisor2, \
+           divisor3, \
+           predict_size, \
+           target_indices_char, \
+           target_indices_char_group, \
+           target_char_indices, \
+           target_char_indices_group
 
 
 # selects traces verified by a declare model
@@ -294,7 +296,7 @@ def create_queue(activites, resources):
     # resources_standardized = standardize_list(activites, resources)
     for activity_index in range(len(activites)):
         for resource_index in range(len(resources)):
-            queue.put((-(np.log(activites[activity_index])+np.log(resources[resource_index])),
+            queue.put((-(np.log(activites[activity_index]) + np.log(resources[resource_index])),
                        [activity_index, resource_index]))
     return queue
 
@@ -302,34 +304,6 @@ def create_queue(activites, resources):
 def standardize_list(list1, list2):
     len1 = float(len(list1))
     len2 = float(len(list2))
-    weight = len2/len1
+    weight = len2 / len1
     standardized_list = map(lambda x: weight * x, list2)
     return standardized_list
-
-
-# from Queue import PriorityQueue
-# import numpy as np
-#
-#
-# def create_queue(activites, resources):
-#     queue = PriorityQueue()
-#     resources_standardized = standardize_list(activites, resources)
-#     for activity_index in range(len(activites)):
-#         for resource_index in range(len(resources)):
-#             queue.put((-(np.log(activites[activity_index])+np.log(resources_standardized[resource_index])),
-#                        [activity_index, resource_index]))
-#     return queue
-#
-#
-# def standardize_list(list1, list2):
-#     len1 = float(len(list1))
-#     len2 = float(len(list2))
-#     weight = len2/len1
-#     standardized_list = map(lambda x: weight * x, list2)
-#     return standardized_list
-#
-#
-# lst1 = [0.3, 0.1, 0.4, 0.2]
-# lst2 = [0.35, 0.20, 0.45]
-# lst2_stand = standardize_list(lst1, lst2)
-# q = create_queue(lst1, lst2)

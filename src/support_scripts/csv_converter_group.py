@@ -1,5 +1,4 @@
 import csv
-import time
 import datetime
 import json
 
@@ -10,7 +9,6 @@ CASE_ID = 0
 ACTIVITY_ID = 1
 TIMESTAMP_ID = 2
 GROUP_ID = 3
-
 
 csvfile_in = open('%s' % eventlog_in, 'r')
 spamreader = csv.reader(csvfile_in, delimiter=',', quotechar='|')

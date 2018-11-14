@@ -1,5 +1,3 @@
-import plotly.plotly as py
-import plotly.graph_objs as go
 import plotly
 from plotly import tools
 
@@ -15,14 +13,14 @@ from prepare_graph_results import trace5
 
 plotly.__version__
 
-
 # Edit the layout
-layout = dict(title = 'BPI13 incidents results',
-              xaxis = dict(title = 'Prefix'),
-              yaxis = dict(title = 'Damerau Levenshtein Similarity'),
+layout = dict(title='BPI13 incidents results',
+              xaxis=dict(title='Prefix'),
+              yaxis=dict(title='Damerau Levenshtein Similarity'),
               )
 
-fig = tools.make_subplots(rows=3, cols=2,subplot_titles=('BPI13','BPI11', 'BPI12','BPI17','HelpDesk','Environmental Permit'))
+fig = tools.make_subplots(rows=3, cols=2,
+                          subplot_titles=('BPI13', 'BPI11', 'BPI12', 'BPI17', 'HelpDesk', 'Environmental Permit'))
 
 fig.append_trace(trace0, 1, 1)
 fig.append_trace(trace1, 1, 1)
@@ -66,10 +64,8 @@ fig.append_trace(trace3_env, 3, 2)
 fig.append_trace(trace4_env, 3, 2)
 fig.append_trace(trace5_env, 3, 2)
 
-
-
 fig['layout'].update(height=1000, width=900, title='Results unfolded')
 plotly.offline.plot(fig, filename='simple-subplot')
 
-#fig = dict(data=data, layout=layout)
-#plotly.offline.plot(fig, filename='styled-line')
+# fig = dict(data=data, layout=layout)
+# plotly.offline.plot(fig, filename='styled-line')

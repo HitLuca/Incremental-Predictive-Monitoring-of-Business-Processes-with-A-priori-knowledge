@@ -10,25 +10,64 @@ Author: Niek Tax
 """
 
 from __future__ import print_function, division
-from keras.models import Model
-from keras.layers.core import Dense
-from keras.layers.recurrent import LSTM
-from keras.layers import Input
-from keras.optimizers import Nadam
-from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-from keras.layers.normalization import BatchNormalization
-import numpy as np
+
 import copy
 import csv
 import time
-from itertools import izip
 from datetime import datetime
-from shared_variables import get_unicode_from_int, eventlog
+from itertools import izip
+import os
+
+import numpy as np
+from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+from keras.layers import Input, Dropout
+from keras.layers.core import Dense
+from keras.layers.recurrent import LSTM
+from keras.models import Model
+
+from shared_variables import get_unicode_from_int, activate_settings
 
 
-# this part of the src opens the file, reads it into three following variables
+def build_model(max_len, num_features, target_chars):
+    print('Build model...')
+    main_input = Input(shape=(max_len, num_features), name='main_input')
+    processed = main_input
 
-def train():
+    processed = LSTM(128, return_sequences=False)(processed)
+    processed = Dropout(0.5)(processed)
+    processed = Dense(64, activation='relu')(processed)
+    processed = Dropout(0.5)(processed)
+    act_output = Dense(len(target_chars), activation='softmax', name='act_output')(processed)
+    time_output = Dense(1, activation='relu', name='time_output')(processed)
+
+    model = Model(main_input, [act_output, time_output])
+
+    model.compile(loss={'act_output': 'categorical_crossentropy', 'time_output': 'mae'}, optimizer='adam')
+    return model
+
+
+def create_checkpoints_path(log_name):
+    folder_path = 'output_files/final_experiments/models/CF/' + log_name
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    checkpoint_name = folder_path + '/model_{epoch:03d}-{val_loss:.3f}.h5'
+    return checkpoint_name
+
+
+def train_model(model, checkpoint_name, X, y_a, y_t):
+    model_checkpoint = ModelCheckpoint(checkpoint_name, save_best_only=True)
+    lr_reducer = ReduceLROnPlateau(factor=0.5, patience=10, verbose=0)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=30)
+
+    model.fit(X, {'act_output': y_a, 'time_output': y_t},
+              validation_split=0.2,
+              verbose=2,
+              callbacks=[early_stopping, model_checkpoint, lr_reducer],
+              epochs=300)
+
+
+def train(log_identificator):
+    eventlog = activate_settings(log_identificator)[0]
     lines = []  # list of all the activity sequences
     timeseqs = []  # time sequences (differences between two events)
     timeseqs2 = []  # time sequences (differences between the current and first)
@@ -43,7 +82,7 @@ def train():
     casestarttime = None
     lasteventtime = None
 
-    csvfile = open('../data/final_experiments/%s' % eventlog, 'r')
+    csvfile = open('../data/final_experiments/%s.csv' % eventlog, 'r')
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
     next(spamreader, None)  # skip the headers
 
@@ -62,8 +101,8 @@ def train():
             times2 = []
             numlines += 1
         line += get_unicode_from_int(row[1])
-        timesincelastevent = datetime.fromtimestamp(time.mktime(t))-datetime.fromtimestamp(time.mktime(lasteventtime))
-        timesincecasestart = datetime.fromtimestamp(time.mktime(t))-datetime.fromtimestamp(time.mktime(casestarttime))
+        timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(lasteventtime))
+        timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(casestarttime))
         timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
         timediff2 = 86400 * timesincecasestart.days + timesincecasestart.seconds
         times.append(timediff)
@@ -84,20 +123,20 @@ def train():
     print('divisor2: {}'.format(divisor2))
 
     # separate training data into 2(out of 3) parts
-    elems_per_fold = int(round(numlines/3))
+    elems_per_fold = int(round(numlines / 3))
 
     many = 0
     for i in range(len(lines)):
         many = many + len(lines[i])
 
-    print ("average length of the trace: ", many / len(lines))
-    print ("number of traces: ", len(lines))
+    print("average length of the trace: ", many / len(lines))
+    print("number of traces: ", len(lines))
 
     fold1 = lines[:elems_per_fold]
-    fold2 = lines[elems_per_fold:2*elems_per_fold]
+    fold2 = lines[elems_per_fold:2 * elems_per_fold]
     lines = fold1 + fold2
 
-    lines = map(lambda x: x+'!', lines)  # put delimiter symbol
+    lines = map(lambda x: x + '!', lines)  # put delimiter symbol
     maxlen = max(map(lambda x: len(x), lines))  # find maximum line size
 
     # next lines here to get all possible characters for events and annotate them with numbers
@@ -110,7 +149,7 @@ def train():
     char_indices = dict((c, i) for i, c in enumerate(chars))
     target_char_indices = dict((c, i) for i, c in enumerate(target_chars))
 
-    csvfile = open('../data/final_experiments/%s' % eventlog, 'r')
+    csvfile = open('../data/final_experiments/%s.csv' % eventlog, 'r')
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
     next(spamreader, None)  # skip the headers
     lastcase = ''
@@ -148,10 +187,10 @@ def train():
             times4 = []
             numlines += 1
         line += get_unicode_from_int(row[1])
-        timesincelastevent = datetime.fromtimestamp(time.mktime(t))-datetime.fromtimestamp(time.mktime(lasteventtime))
-        timesincecasestart = datetime.fromtimestamp(time.mktime(t))-datetime.fromtimestamp(time.mktime(casestarttime))
+        timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(lasteventtime))
+        timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(casestarttime))
         midnight = datetime.fromtimestamp(time.mktime(t)).replace(hour=0, minute=0, second=0, microsecond=0)
-        timesincemidnight = datetime.fromtimestamp(time.mktime(t))-midnight
+        timesincemidnight = datetime.fromtimestamp(time.mktime(t)) - midnight
         timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
         timediff2 = 86400 * timesincecasestart.days + timesincecasestart.seconds
         timediff3 = timesincemidnight.seconds  # this leaves only time even occured after midnight
@@ -171,29 +210,30 @@ def train():
     timeseqs4.append(times4)
     numlines += 1
 
-    elems_per_fold = int(round(numlines/3))
+    elems_per_fold = int(round(numlines / 3))
     fold1 = lines[:elems_per_fold]
     fold1_t = timeseqs[:elems_per_fold]
     fold1_t2 = timeseqs2[:elems_per_fold]
     fold1_t3 = timeseqs3[:elems_per_fold]
     fold1_t4 = timeseqs4[:elems_per_fold]
+
     with open('output_files/folds/fold1.csv', 'wb') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for row, timeseq in izip(fold1, fold1_t):
             spamwriter.writerow([unicode(s).encode("utf-8") + '#{}'.format(t) for s, t in izip(row, timeseq)])
 
-    fold2 = lines[elems_per_fold:2*elems_per_fold]
-    fold2_t = timeseqs[elems_per_fold:2*elems_per_fold]
-    fold2_t2 = timeseqs2[elems_per_fold:2*elems_per_fold]
-    fold2_t3 = timeseqs3[elems_per_fold:2*elems_per_fold]
-    fold2_t4 = timeseqs4[elems_per_fold:2*elems_per_fold]
+    fold2 = lines[elems_per_fold:2 * elems_per_fold]
+    fold2_t = timeseqs[elems_per_fold:2 * elems_per_fold]
+    fold2_t2 = timeseqs2[elems_per_fold:2 * elems_per_fold]
+    fold2_t3 = timeseqs3[elems_per_fold:2 * elems_per_fold]
+    fold2_t4 = timeseqs4[elems_per_fold:2 * elems_per_fold]
     with open('output_files/folds/fold2.csv', 'wb') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for row, timeseq in izip(fold2, fold2_t):
             spamwriter.writerow([unicode(s).encode("utf-8") + '#{}'.format(t) for s, t in izip(row, timeseq)])
 
-    fold3 = lines[2*elems_per_fold:]
-    fold3_t = timeseqs[2*elems_per_fold:]
+    fold3 = lines[2 * elems_per_fold:]
+    fold3_t = timeseqs[2 * elems_per_fold:]
     with open('output_files/folds/fold3.csv', 'wb') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for row, timeseq in izip(fold3, fold3_t):
@@ -209,7 +249,7 @@ def train():
     sentences = []
     softness = 0
     next_chars = []
-    lines = map(lambda x: x+'!', lines)
+    lines = map(lambda x: x + '!', lines)
 
     sentences_t = []
     sentences_t2 = []
@@ -231,7 +271,7 @@ def train():
             sentences_t3.append(line_t3[0:i])
             sentences_t4.append(line_t4[0:i])
             next_chars.append(line[i])
-            if i == len(line)-1:  # special case to deal time of end character
+            if i == len(line) - 1:  # special case to deal time of end character
                 next_chars_t.append(0)
                 next_chars_t2.append(0)
                 next_chars_t3.append(0)
@@ -244,13 +284,13 @@ def train():
     print('nb sequences:', len(sentences))
 
     print('Vectorization...')
-    num_features = len(chars)+5
+    num_features = len(chars) + 5
     print('num features: {}'.format(num_features))
     X = np.zeros((len(sentences), maxlen, num_features), dtype=np.float32)
     y_a = np.zeros((len(sentences), len(target_chars)), dtype=np.float32)
     y_t = np.zeros((len(sentences)), dtype=np.float32)
     for i, sentence in enumerate(sentences):
-        leftpad = maxlen-len(sentence)
+        leftpad = maxlen - len(sentence)
         next_t = next_chars_t[i]
         sentence_t = sentences_t[i]
         sentence_t2 = sentences_t2[i]
@@ -260,55 +300,19 @@ def train():
             # multiset_abstraction = Counter(sentence[:t+1])
             for c in chars:
                 if c == char:  # this will encode present events to the right places
-                    X[i, t+leftpad, char_indices[c]] = 1
-            X[i, t+leftpad, len(chars)] = t+1
-            X[i, t+leftpad, len(chars)+1] = sentence_t[t]/divisor
-            X[i, t+leftpad, len(chars)+2] = sentence_t2[t]/divisor2
-            X[i, t+leftpad, len(chars)+3] = sentence_t3[t]/86400
-            X[i, t+leftpad, len(chars)+4] = sentence_t4[t]/7
+                    X[i, t + leftpad, char_indices[c]] = 1
+            X[i, t + leftpad, len(chars)] = t + 1
+            X[i, t + leftpad, len(chars) + 1] = sentence_t[t] / divisor
+            X[i, t + leftpad, len(chars) + 2] = sentence_t2[t] / divisor2
+            X[i, t + leftpad, len(chars) + 3] = sentence_t3[t] / 86400
+            X[i, t + leftpad, len(chars) + 4] = sentence_t4[t] / 7
         for c in target_chars:
             if c == next_chars[i]:
-                y_a[i, target_char_indices[c]] = 1-softness
+                y_a[i, target_char_indices[c]] = 1 - softness
             else:
-                y_a[i, target_char_indices[c]] = softness/(len(target_chars)-1)
-        y_t[i] = next_t/divisor
-        np.set_printoptions(threshold=np.nan)
+                y_a[i, target_char_indices[c]] = softness / (len(target_chars) - 1)
+        y_t[i] = next_t / divisor
 
-    import tensorflow as tf
-    from keras.backend.tensorflow_backend import set_session
-    config = tf.ConfigProto()
-    config.gpu_options.per_process_gpu_memory_fraction = 0.5
-    set_session(tf.Session(config=config))
-
-    # build the model:
-    print('Build model...')
-    main_input = Input(shape=(maxlen, num_features), name='main_input')
-    # train a 2-layer LSTM with one shared layer
-    # the shared layer
-    l1 = LSTM(100, consume_less='gpu', init='glorot_uniform', return_sequences=True, dropout_W=0.2)(main_input)
-    b1 = BatchNormalization()(l1)
-    # the layer specialized in activity prediction
-    l2_1 = LSTM(100, consume_less='gpu', init='glorot_uniform', return_sequences=False, dropout_W=0.2)(b1)
-    b2_1 = BatchNormalization()(l2_1)
-    # the layer specialized in time prediction
-    l2_2 = LSTM(100, consume_less='gpu', init='glorot_uniform', return_sequences=False, dropout_W=0.2)(b1)
-    b2_2 = BatchNormalization()(l2_2)
-    act_output = Dense(len(target_chars), activation='softmax', init='glorot_uniform', name='act_output')(b2_1)
-    time_output = Dense(1, init='glorot_uniform', name='time_output')(b2_2)
-
-    model = Model(input=[main_input], output=[act_output, time_output])
-
-    opt = Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, schedule_decay=0.004, clipvalue=3)
-
-    model.compile(loss={'act_output': 'categorical_crossentropy', 'time_output': 'mae'}, optimizer=opt)
-    early_stopping = EarlyStopping(monitor='val_loss', patience=42)
-    path_to_model = 'output_files/final_experiments/models/CF/' + eventlog[:-4] + '/model_{epoch:02d}-{val_loss:.2f}.h5'
-    model_checkpoint = ModelCheckpoint(path_to_model, monitor='val_loss', verbose=0, save_best_only=True,
-                                       save_weights_only=False, mode='auto')
-    lr_reducer = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=10, verbose=0, mode='auto', epsilon=0.0001,
-                                   cooldown=0, min_lr=0)
-
-    model.fit(X, {'act_output': y_a, 'time_output': y_t}, validation_split=0.2, verbose=2, callbacks=[early_stopping,
-                                                                                                      model_checkpoint,
-                                                                                                      lr_reducer],
-              batch_size=maxlen, nb_epoch=300)
+    model = build_model(maxlen, num_features, target_chars)
+    checkpoint_name = create_checkpoints_path(eventlog)
+    train_model(model, checkpoint_name, X, y_a, y_t)

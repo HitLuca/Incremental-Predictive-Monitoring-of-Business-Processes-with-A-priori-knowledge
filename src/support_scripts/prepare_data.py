@@ -14,8 +14,10 @@ import time
 # from collections import Counter
 from datetime import datetime
 from itertools import izip
+
 import numpy as np
 from formula_verificator import verify_formula_as_compliant
+
 from shared_variables import get_unicode_from_int
 
 
@@ -112,11 +114,11 @@ def prepare_testing_data(eventlog):
     # set parameters
     predict_size = maxlen
 
-    return lines, lines_t, lines_t2, lines_t3, maxlen, chars, char_indices, divisor, divisor2, divisor3, predict_size,\
-        target_indices_char, target_char_indices
+    return lines, lines_t, lines_t2, lines_t3, maxlen, chars, char_indices, divisor, divisor2, divisor3, predict_size, \
+           target_indices_char, target_char_indices
 
 
-def select_formula_verified_traces(lines, lines_t, lines_t2, lines_t3, formula,  prefix=0):
+def select_formula_verified_traces(lines, lines_t, lines_t2, lines_t3, formula, prefix=0):
     # select only lines with formula verified
     lines_v = []
     lines_t_v = []
@@ -175,7 +177,7 @@ def get_symbol_ampl(predictions, target_indices_char, target_char_indices, start
 def repetitions(s):
     r = re.compile(r"(.+?)\1+")
     for match in r.finditer(s):
-        yield (match.group(1), len(match.group(0))/len(match.group(1)))
+        yield (match.group(1), len(match.group(0)) / len(match.group(1)))
 
 
 def amplify(s):
@@ -190,7 +192,6 @@ def amplify(s):
         else:
             return 1, list_of_rep[-1][0][0]
     return 1, " "
-
 
 # the match.group(0) finds the whole substring that contains 1+ cycles
 # the match.group(1) finds the substring that indicates the cycle

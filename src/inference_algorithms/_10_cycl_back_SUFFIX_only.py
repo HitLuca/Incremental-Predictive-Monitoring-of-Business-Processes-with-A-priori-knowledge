@@ -6,33 +6,30 @@ Author: Anton Yeshchenko
 from __future__ import division
 
 import csv
+import os.path
+import sys
+import time
 from datetime import timedelta
+from inspect import getsourcefile
 from itertools import izip
 
 import distance
 import numpy as np
-from jellyfish._jellyfish import damerau_levenshtein_distance
-from keras.models import load_model
-from sklearn import metrics
-
 from compliant_predictions.tree_structure_beamsearch import MultileafTree
 from formula_verificator import verify_formula_as_compliant
-
-from inspect import getsourcefile
-import os.path
-import sys
-import time
-
+from jellyfish._jellyfish import damerau_levenshtein_distance
+from keras.models import load_model
 from shared_variables import activateSettings
+from sklearn import metrics
 from support_scripts.prepare_data import amplify, getSymbolAmpl, prepare_testing_data, encode, \
     selectFormulaVerifiedTraces
 
 
 def run_experiments(log_identificator, formula_type):
     eventlog, path_to_model_file, beam_size, \
-        prefix_size_pred_from, prefix_size_pred_to, formula = activateSettings(log_identificator, formula_type)
+    prefix_size_pred_from, prefix_size_pred_to, formula = activateSettings(log_identificator, formula_type)
 
-    current_path = os.path.abspath(getsourcefile(lambda:0))
+    current_path = os.path.abspath(getsourcefile(lambda: 0))
     current_dir = os.path.dirname(current_path)
     parent_dir = current_dir[:current_dir.rfind(os.path.sep)]
 
@@ -41,7 +38,7 @@ def run_experiments(log_identificator, formula_type):
     start_time = time.time()
 
     lines, lines_t, lines_t2, lines_t3, maxlen, chars, char_indices, divisor, divisor2, \
-        divisor3, predict_size, target_indices_char, target_char_indices = prepare_testing_data(eventlog)
+    divisor3, predict_size, target_indices_char, target_char_indices = prepare_testing_data(eventlog)
 
     # find cycles and modify the probability functionality goes here
     stop_symbol_probability_amplifier_current = 1
@@ -59,14 +56,14 @@ def run_experiments(log_identificator, formula_type):
     model = load_model(path_to_model_file)
     stop_symbol_probability_amplifier_current = 1
     # make predictions
-    with open('output_files/results/'+formula_type+'/suffix_and_remaining_time2_%s' % eventlog, 'wb') as csvfile:
+    with open('output_files/results/' + formula_type + '/suffix_and_remaining_time2_%s' % eventlog, 'wb') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         spamwriter.writerow(["Prefix length", "Groud truth", "Predicted", "Levenshtein", "Damerau", "Jaccard",
                              "Ground truth times", "Predicted times", "RMSE", "MAE", "Median AE"])
         for prefix_size in range(prefix_size_pred_from, prefix_size_pred_to):
             # here we checkout the prefixes with formulas verified only on the suffix phase
             lines_s, lines_t_s, lines_t2_s, lines_t3_s = selectFormulaVerifiedTraces(lines, lines_t, lines_t2, lines_t3,
-                                                                                     formula,  prefix_size)
+                                                                                     formula, prefix_size)
             print("prefix size: " + str(prefix_size))
             print("formulas verifited: " + str(len(lines_s)) + " out of : " + str(len(lines)))
             for line, times, times2, times3 in izip(lines_s, lines_t_s, lines_t2_s, lines_t3_s):
@@ -86,10 +83,10 @@ def run_experiments(log_identificator, formula_type):
 
                 prediction_end_reached = False
 
-                ground_truth = ''.join(line[prefix_size:prefix_size+predict_size])
-                ground_truth_t = times2[prefix_size-1]
-                case_end_time = times2[len(times2)-1]
-                ground_truth_t = case_end_time-ground_truth_t
+                ground_truth = ''.join(line[prefix_size:prefix_size + predict_size])
+                ground_truth_t = times2[prefix_size - 1]
+                case_end_time = times2[len(times2) - 1]
+                ground_truth_t = case_end_time - ground_truth_t
                 predicted = ''
 
                 for i in range(predict_size):
@@ -101,7 +98,7 @@ def run_experiments(log_identificator, formula_type):
                     y_t = y[1][0][0]
 
                     stop_symbol_probability_amplifier_current, \
-                        start_of_the_cycle_symbol = amplify(search_tree_root.cropped_line)
+                    start_of_the_cycle_symbol = amplify(search_tree_root.cropped_line)
 
                     # cropped_line += prediction
                     if y_t < 0:
@@ -123,8 +120,8 @@ def run_experiments(log_identificator, formula_type):
                                 ma = True
                                 break
 
-                            # else:
-                            #     prediction_end_reached = True;
+                                # else:
+                                #     prediction_end_reached = True;
                     if ma:
                         break
                     # if the end of prediction was not reached we continue as always, and then function :choose_next_

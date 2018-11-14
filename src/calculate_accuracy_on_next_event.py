@@ -7,18 +7,15 @@ Author: Niek Tax
 
 from __future__ import division
 
-import string
 import csv
+import string
+
 import unicodecsv
-from jellyfish._jellyfish import damerau_levenshtein_distance
-import nltk
-
-
-
 
 averageTraceLengths = []
 
 resss = [[]]
+
 
 #
 # def output(eventlogs, number_logs = 6):
@@ -83,7 +80,7 @@ resss = [[]]
 #
 #     return res_dict
 
-def outputPrefixLe(eventlogs, mode = 'STRONG', prefixLessThan_orEqual = 0, prefixMoreEqal = 0, number_logs = 6):
+def outputPrefixLe(eventlogs, mode='STRONG', prefixLessThan_orEqual=0, prefixMoreEqal=0, number_logs=6):
     res_dict = dict()
     res_dict['total'] = []
     res_dict['damerau'] = []
@@ -96,13 +93,12 @@ def outputPrefixLe(eventlogs, mode = 'STRONG', prefixLessThan_orEqual = 0, prefi
     traces_wrong = 0
     absolute_dis_DL = 0
     mark2 = True
-    for i in range(0,4):#number_logs):
+    for i in range(0, 4):  # number_logs):
         csvfile = open('output_files/results/' + mode + '/suffix_and_remaining_time' + str(i) + '_%s' % eventlog, 'r')
-        r = unicodecsv.reader(csvfile ,encoding='utf-8')
-        r.next() # header
+        r = unicodecsv.reader(csvfile, encoding='utf-8')
+        r.next()  # header
         vals = dict()
         lens = dict()
-
 
         average_trace_length = 0
 
@@ -114,15 +110,15 @@ def outputPrefixLe(eventlogs, mode = 'STRONG', prefixLessThan_orEqual = 0, prefi
         lensOfGroundTruthDifferentPrefixesLengthsDICT = list()
 
         for row in r:
-            if prefixLessThan_orEqual != 0 and not ((len(row[1]) + int(row[0])) <=  prefixLessThan_orEqual):
+            if prefixLessThan_orEqual != 0 and not ((len(row[1]) + int(row[0])) <= prefixLessThan_orEqual):
                 continue
             if prefixMoreEqal != 0 and not ((len(row[1]) + int(row[0])) >= prefixMoreEqal):
                 continue
             l = list()
             len1 = list()
             count += 1
-            if False:#float(row[4]) < 0.00001:
-                #here means that the traces are totally different
+            if False:  # float(row[4]) < 0.00001:
+                # here means that the traces are totally different
                 count -= 1
                 traces_wrong += 1
             else:
@@ -131,12 +127,11 @@ def outputPrefixLe(eventlogs, mode = 'STRONG', prefixLessThan_orEqual = 0, prefi
                 l = vals.get(row[0])
             elif lensOfGroundTruthDifferentPrefixesLengths:
                 lensOfGroundTruthDifferentPrefixesLengthsDICT.append(
-                    str(int(row[0])-1)+" : " +
+                    str(int(row[0]) - 1) + " : " +
                     str(sum(lensOfGroundTruthDifferentPrefixesLengths) /
                         len(lensOfGroundTruthDifferentPrefixesLengths)) + " numOf: " + \
-                        str(len(lensOfGroundTruthDifferentPrefixesLengths)))
+                    str(len(lensOfGroundTruthDifferentPrefixesLengths)))
                 del lensOfGroundTruthDifferentPrefixesLengths[:]
-
 
             if row[0] in lens.keys():
                 len1 = lens.get(row[0])
@@ -154,7 +149,7 @@ def outputPrefixLe(eventlogs, mode = 'STRONG', prefixLessThan_orEqual = 0, prefi
             #     l.append(int(row[1][0]==row[2][0]))
             vals[row[0]] = l
             lens[row[0]] = len1
-            #print(vals)
+            # print(vals)
 
 
 
@@ -180,15 +175,14 @@ def outputPrefixLe(eventlogs, mode = 'STRONG', prefixLessThan_orEqual = 0, prefi
             str(row[0]) + " : " +
             str(sum(lensOfGroundTruthDifferentPrefixesLengths) /
                 len(lensOfGroundTruthDifferentPrefixesLengths)) + " numOf: " + \
-                str(len(lensOfGroundTruthDifferentPrefixesLengths)))
+            str(len(lensOfGroundTruthDifferentPrefixesLengths)))
 
         if not mark:
             mark = True
             res_dict['average trace lenght ground truth'] = averageTraceLengthsGroundTruth / count
             res_dict['traces'] = count
 
-        averageTraceLengths.append(str(float(average_trace_length)/count))
-
+        averageTraceLengths.append(str(float(average_trace_length) / count))
 
         l2 = list()
         lens2 = list()
@@ -196,9 +190,9 @@ def outputPrefixLe(eventlogs, mode = 'STRONG', prefixLessThan_orEqual = 0, prefi
         resOUT1 = []
         resOUT2 = []
         for k in vals.keys():
-            #print('{}: {}'.format(k, vals[k]))
+            # print('{}: {}'.format(k, vals[k]))
             l2.extend(vals[k])
-            res = sum(vals[k])/len(vals[k])
+            res = sum(vals[k]) / len(vals[k])
             if k not in res_dict:
                 res_dict[k] = ['{:6.5f}'.format(res)]
             else:
@@ -221,19 +215,19 @@ def outputPrefixLe(eventlogs, mode = 'STRONG', prefixLessThan_orEqual = 0, prefi
             mark2 = False
 
         res_dict["len_ground_truth_with_resp_to_prefixes"] = lensOfGroundTruthDifferentPrefixesLengthsDICT
-        res_dict['total'].append('{:6.5f}'.format(sum(l2)/len(l2)))
-        res_dict['damerau'].append('{:6.5f}'.format(damerau/count))
+        res_dict['total'].append('{:6.5f}'.format(sum(l2) / len(l2)))
+        res_dict['damerau'].append('{:6.5f}'.format(damerau / count))
         res_dict['wrong'].append(traces_wrong)
-        res_dict['abs_err'].append(absolute_dis_DL/count)
-        res_dict['bleu'].append(bleu_abs/count)
+        res_dict['abs_err'].append(absolute_dis_DL / count)
+        res_dict['bleu'].append(bleu_abs / count)
         traces_wrong = 0
         absolute_dis_DL = 0
     return res_dict
 
 
-#res = output(eventlog)
+# res = output(eventlog)
 
-#if you want to experiment with prefix size
+# if you want to experiment with prefix size
 
 
 
@@ -260,14 +254,12 @@ with open('output_files/table_all_results.csv', 'wb') as csvfile:
                         output.append(k)
                     spamwriter.writerow(output)
 
-
             print "For event log : ", eventlog, "  mode ", mode
             print "Unmod pred  --  backtracking  --  protracking -- cycles -- cycles#back -- cycles#pro"
             for key in res:
                 if not (key == 'total' or key == 'damerau' or key == 'average trace lenght ground truth'
                         or key == 'traces' or key == "wrong" or key == 'abs_err' or key == 'bleu'):
                     print key, ' === ', string.join(res[key], '   ')
-
 
             print 'total', ' === ', string.join(res['total'])
             print 'damerau', ' === ', string.join(res['damerau'])
@@ -286,9 +278,7 @@ with open('output_files/table_all_results.csv', 'wb') as csvfile:
                 output.append(i)
             spamwriter.writerow(output)
 
-
             print 'average trace length ground truth === ', res['average trace lenght ground truth']
-
 
             output = []
             output.append('average trace lenght ground truth')
@@ -297,10 +287,9 @@ with open('output_files/table_all_results.csv', 'wb') as csvfile:
 
             print 'number of totaly wrong traces === ', res['wrong']
             print 'absolute === ', res['abs_err']
-           # print 'BLEU SCORE === ', res['bleu']
+            # print 'BLEU SCORE === ', res['bleu']
             print 'number of traces ===', res['traces']
 
             output = []
             averageTraceLengths = []
             resss = [[]]
-

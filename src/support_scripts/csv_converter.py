@@ -1,6 +1,6 @@
 import csv
-import json
 import datetime
+import json
 
 eventlog_in = "logs/10x5_1W.csv"
 eventlog_out = "converted_logs/10x5_1W.csv"
@@ -9,14 +9,12 @@ CASE_ID = 0
 ACTIVITY_ID = 1
 TIMESTAMP_ID = 2
 
-
 csvfile_in = open('%s' % eventlog_in, 'r')
 spamreader = csv.reader(csvfile_in, delimiter=',', quotechar='|')
 next(spamreader, None)  # skip the headers
 
 dictionary = {}
 give_number = 0
-
 
 with open('%s' % eventlog_out, 'wb') as csvfile_out:
     writer = csv.writer(csvfile_out, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -27,8 +25,8 @@ with open('%s' % eventlog_out, 'wb') as csvfile_out:
     current_event = 0
     for row in spamreader:
         timestamp = row[TIMESTAMP_ID].split(".")[0]  # timestamp in hospital log
-    #   split_time = timestamp.split("T")
-    #   timestamp = split_time[0]+" "+ split_time[1].split("+")[0]
+        #   split_time = timestamp.split("T")
+        #   timestamp = split_time[0]+" "+ split_time[1].split("+")[0]
         timestamp = datetime.datetime.strptime(timestamp, "%Y/%m/%d %H:%M:%S")  # .%f")
         timestamp = timestamp.strftime("%Y/%m/%d %H:%M:%S")
 

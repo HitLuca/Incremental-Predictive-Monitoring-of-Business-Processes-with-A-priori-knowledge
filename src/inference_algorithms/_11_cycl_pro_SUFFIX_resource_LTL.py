@@ -6,24 +6,27 @@ here the beam search (with breath-first-search) is implemented, to find complian
 The code is expanded to also consider the Resource attribute
 """
 from __future__ import division
+
+import csv
+import os.path
+import sys
+import time
 from Queue import PriorityQueue
+from datetime import datetime, timedelta
+from inspect import getsourcefile
 from itertools import izip
+
+import distance
+import numpy as np
+from formula_verificator import verify_formula_as_compliant
 # noinspection PyProtectedMember
 from jellyfish._jellyfish import damerau_levenshtein_distance
 from keras.models import load_model
-from sklearn import metrics
-from inspect import getsourcefile
-from datetime import datetime, timedelta
 from shared_variables import activate_settings
-from formula_verificator import verify_formula_as_compliant
+from sklearn import metrics
 from support_scripts.prepare_data_resource import amplify, get_symbol_ampl, encode, prepare_testing_data, \
     select_declare_verified_traces
-import csv
-import numpy as np
-import time
-import distance
-import os.path
-import sys
+
 # import logging
 
 # logging.basicConfig(filename='LTL.log', level=logging.INFO)
@@ -36,15 +39,14 @@ sys.path.insert(0, parent_dir)
 
 
 def run_experiments(log_identificator, formula_type, rnn_type):
-
     eventlog, \
-        path_to_model_file_cf, \
-        path_to_model_file_cfr, \
-        path_to_declare_model_file, \
-        beam_size, \
-        prefix_size_pred_from, \
-        prefix_size_pred_to, \
-        formula = activate_settings(log_identificator, formula_type)
+    path_to_model_file_cf, \
+    path_to_model_file_cfr, \
+    path_to_declare_model_file, \
+    beam_size, \
+    prefix_size_pred_from, \
+    prefix_size_pred_to, \
+    formula = activate_settings(log_identificator, formula_type)
 
     if rnn_type == "CF":
         path_to_model_file = path_to_model_file_cf
@@ -55,25 +57,25 @@ def run_experiments(log_identificator, formula_type, rnn_type):
 
     # prepare the data
     lines, \
-        lines_id, \
-        lines_group, \
-        lines_t, \
-        lines_t2, \
-        lines_t3, \
-        lines_t4, \
-        maxlen, \
-        chars, \
-        chars_group, \
-        char_indices, \
-        char_indices_group, \
-        divisor, \
-        divisor2, \
-        divisor3, \
-        predict_size, \
-        target_indices_char, \
-        target_indices_char_group,\
-        target_char_indices, \
-        target_char_indices_group = prepare_testing_data(eventlog)
+    lines_id, \
+    lines_group, \
+    lines_t, \
+    lines_t2, \
+    lines_t3, \
+    lines_t4, \
+    maxlen, \
+    chars, \
+    chars_group, \
+    char_indices, \
+    char_indices_group, \
+    divisor, \
+    divisor2, \
+    divisor3, \
+    predict_size, \
+    target_indices_char, \
+    target_indices_char_group, \
+    target_char_indices, \
+    target_char_indices_group = prepare_testing_data(eventlog)
 
     # find cycles and modify the probability functionality goes here
     stop_symbol_probability_amplifier_current = 1
@@ -122,20 +124,20 @@ def run_experiments(log_identificator, formula_type, rnn_type):
             print(prefix_size)
 
             lines_s, \
-                lines_id_s, \
-                lines_group_s, \
-                lines_t_s, \
-                lines_t2_s, \
-                lines_t3_s, \
-                lines_t4_s = select_declare_verified_traces(path_to_declare_model_file,
-                                                            lines,
-                                                            lines_id,
-                                                            lines_group,
-                                                            lines_t,
-                                                            lines_t2,
-                                                            lines_t3,
-                                                            lines_t4,
-                                                            prefix_size)
+            lines_id_s, \
+            lines_group_s, \
+            lines_t_s, \
+            lines_t2_s, \
+            lines_t3_s, \
+            lines_t4_s = select_declare_verified_traces(path_to_declare_model_file,
+                                                        lines,
+                                                        lines_id,
+                                                        lines_group,
+                                                        lines_t,
+                                                        lines_t2,
+                                                        lines_t3,
+                                                        lines_t4,
+                                                        prefix_size)
 
             print("prefix size: " + str(prefix_size))
             print("formulas verified: " + str(len(lines_s)) + " out of : " + str(len(lines)))
@@ -169,11 +171,11 @@ def run_experiments(log_identificator, formula_type, rnn_type):
                                                   cropped_times4,
                                                   total_predicted_time_initialization)
 
-                ground_truth = ''.join(line[prefix_size:prefix_size+predict_size])
-                ground_truth_group = ''.join(line_group[prefix_size:prefix_size+predict_size])
-                ground_truth_t = times2[prefix_size-1]
-                case_end_time = times2[len(times2)-1]
-                ground_truth_t = case_end_time-ground_truth_t
+                ground_truth = ''.join(line[prefix_size:prefix_size + predict_size])
+                ground_truth_group = ''.join(line_group[prefix_size:prefix_size + predict_size])
+                ground_truth_t = times2[prefix_size - 1]
+                case_end_time = times2[len(times2) - 1]
+                ground_truth_t = case_end_time - ground_truth_t
 
                 queue_next_steps = PriorityQueue()
                 queue_next_steps.put((-search_node_root.probability_of, search_node_root))
@@ -235,7 +237,7 @@ def run_experiments(log_identificator, formula_type, rnn_type):
                             if temp_prediction == '!':
                                 if verify_formula_as_compliant(temp_cropped_line, formula, prefix_size):
                                     stop_symbol_probability_amplifier_current = 1
-                                    print('! predicted, end case')
+                                    # print('! predicted, end case')
                                     queue_next_steps = PriorityQueue()
                                     break
                                 else:
@@ -273,8 +275,8 @@ def run_experiments(log_identificator, formula_type, rnn_type):
                                                   current_prediction_premis.probability_of + np.log(probability_this))
 
                             queue_next_steps_future.put((-temp.probability_of, temp))
-                            print 'INFORMATION: ' + str(counterr) + ' ' + str(i) + ' ' + str(k) + ' ' + str(j) + ' ' + \
-                                  temp_cropped_line[prefix_size:] + "     " + str(temp.probability_of)
+                            # print 'INFORMATION: ' + str(counterr) + ' ' + str(i) + ' ' + str(k) + ' ' + str(j) + ' ' + \
+                            #       temp_cropped_line[prefix_size:] + "     " + str(temp.probability_of)
 
                     queue_next_steps = queue_next_steps_future
                     queue_next_steps_future = PriorityQueue()

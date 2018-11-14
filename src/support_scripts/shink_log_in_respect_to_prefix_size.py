@@ -7,12 +7,9 @@ Author: Anton Yeshchenko
 
 import csv
 
-import time
-
 eventlog_in = "./../../data/bpi_11.csv"
 
 prefix_size = 20
-
 
 csvfile_in = open('%s' % eventlog_in, 'r')
 spamreader = csv.reader(csvfile_in, delimiter=',', quotechar=' ')
@@ -22,7 +19,7 @@ eventlog_out = eventlog_in[:-4] + "_cut_" + str(prefix_size) + ".csv"
 
 with open('%s' % eventlog_out, 'wb') as csvfile_out:
     writer = csv.writer(csvfile_out, delimiter=",", quoting=csv.QUOTE_MINIMAL)
-    writer.writerow(["CaseID","ActivityID","CompleteTimestamp"])
+    writer.writerow(["CaseID", "ActivityID", "CompleteTimestamp"])
 
     case_id = None
     buffer = []
@@ -35,8 +32,3 @@ with open('%s' % eventlog_out, 'wb') as csvfile_out:
                     writer.writerow(buffer[i])
             buffer = []
         buffer.append(row)
-
-
-
-
-

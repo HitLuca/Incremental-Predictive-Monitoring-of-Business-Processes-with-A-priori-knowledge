@@ -6,30 +6,25 @@ Author: Anton Yeshchenko
 
 from __future__ import division
 
-import re
-
-from keras.models import load_model
-import csv
 import copy
-import numpy as np
-import distance
-from itertools import izip
-from jellyfish._jellyfish import damerau_levenshtein_distance
-import unicodecsv
-from sklearn import metrics
-from math import sqrt
+import csv
 import time
-from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
 from collections import Counter
+from datetime import datetime, timedelta
+from itertools import izip
 
-from formula_verificator import verify_formula_as_compliant
+import distance
+import numpy as np
+from jellyfish._jellyfish import damerau_levenshtein_distance
+from keras.models import load_model
 from shared_variables import getUnicode_fromInt, activateSettings
-from support_scripts.prepare_data import repetitions, amplify, getSymbolAmpl, selectFormulaVerifiedTraces
+from sklearn import metrics
+from support_scripts.prepare_data import amplify, getSymbolAmpl, selectFormulaVerifiedTraces
+
 
 def runExperiments(logIdentificator, formulaType):
     eventlog, path_to_model_file, beam_size, \
-        prefix_size_pred_from, prefix_size_pred_to, formula = activateSettings(logIdentificator, formulaType)
+    prefix_size_pred_from, prefix_size_pred_to, formula = activateSettings(logIdentificator, formulaType)
     start_time = time.time()
 
     csvfile = open('../data/%s' % eventlog, 'r')
@@ -37,14 +32,13 @@ def runExperiments(logIdentificator, formulaType):
 
     next(spamreader, None)  # skip the headers
 
-
     lastcase = ''
     line = ''
     firstLine = True
     lines = []
     timeseqs = []  # relative time since previous event
-    timeseqs2 = [] # relative time since case start
-    timeseqs3 = [] # absolute time of previous event
+    timeseqs2 = []  # relative time since case start
+    timeseqs3 = []  # absolute time of previous event
     times = []
     times2 = []
     times3 = []
@@ -54,7 +48,7 @@ def runExperiments(logIdentificator, formulaType):
 
     for row in spamreader:
         t = time.strptime(row[2], "%Y-%m-%d %H:%M:%S")
-        if row[0]!=lastcase:
+        if row[0] != lastcase:
             casestarttime = t
             lasteventtime = t
             lastcase = row[0]
@@ -67,12 +61,12 @@ def runExperiments(logIdentificator, formulaType):
             times = []
             times2 = []
             times3 = []
-            numlines+=1
-        line+= getUnicode_fromInt(row[1])
-        timesincelastevent = datetime.fromtimestamp(time.mktime(t))-datetime.fromtimestamp(time.mktime(lasteventtime))
-        timesincecasestart = datetime.fromtimestamp(time.mktime(t))-datetime.fromtimestamp(time.mktime(casestarttime))
+            numlines += 1
+        line += getUnicode_fromInt(row[1])
+        timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(lasteventtime))
+        timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(casestarttime))
         midnight = datetime.fromtimestamp(time.mktime(t)).replace(hour=0, minute=0, second=0, microsecond=0)
-        timesincemidnight = datetime.fromtimestamp(time.mktime(t))-midnight
+        timesincemidnight = datetime.fromtimestamp(time.mktime(t)) - midnight
         timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
         timediff2 = 86400 * timesincecasestart.days + timesincecasestart.seconds
         times.append(timediff)
@@ -86,27 +80,27 @@ def runExperiments(logIdentificator, formulaType):
     timeseqs.append(times)
     timeseqs2.append(times2)
     timeseqs3.append(times3)
-    numlines+=1
+    numlines += 1
 
     divisor = np.mean([item for sublist in timeseqs for item in sublist])
     print('divisor: {}'.format(divisor))
     divisor2 = np.mean([item for sublist in timeseqs2 for item in sublist])
     print('divisor2: {}'.format(divisor2))
-    divisor3 = np.mean(map(lambda x: np.mean(map(lambda y: x[len(x)-1]-y, x)), timeseqs2))
+    divisor3 = np.mean(map(lambda x: np.mean(map(lambda y: x[len(x) - 1] - y, x)), timeseqs2))
     print('divisor3: {}'.format(divisor3))
 
-    elems_per_fold = int(round(numlines/3))
+    elems_per_fold = int(round(numlines / 3))
 
-    fold1and2lines = lines[:2*elems_per_fold]
+    fold1and2lines = lines[:2 * elems_per_fold]
 
     step = 1
     sentences = []
     softness = 0
     next_chars = []
-    fold1and2lines = map(lambda x: x+'!',fold1and2lines)
-    maxlen = max(map(lambda x: len(x),fold1and2lines))
+    fold1and2lines = map(lambda x: x + '!', fold1and2lines)
+    maxlen = max(map(lambda x: len(x), fold1and2lines))
 
-    chars = map(lambda x : set(x),fold1and2lines)
+    chars = map(lambda x: set(x), fold1and2lines)
     chars = list(set().union(*chars))
     chars.sort()
     target_chars = copy.copy(chars)
@@ -118,12 +112,12 @@ def runExperiments(logIdentificator, formulaType):
     target_indices_char = dict((i, c) for i, c in enumerate(target_chars))
     print(indices_char)
 
-    #we only need the third fold, because first two were used for training
+    # we only need the third fold, because first two were used for training
 
-    fold3 = lines[2*elems_per_fold:]
-    fold3_t = timeseqs[2*elems_per_fold:]
-    fold3_t2 = timeseqs2[2*elems_per_fold:]
-    fold3_t3 = timeseqs3[2*elems_per_fold:]
+    fold3 = lines[2 * elems_per_fold:]
+    fold3_t = timeseqs[2 * elems_per_fold:]
+    fold3_t2 = timeseqs2[2 * elems_per_fold:]
+    fold3_t3 = timeseqs3[2 * elems_per_fold:]
 
     lines = fold3
     lines_t = fold3_t
@@ -138,29 +132,27 @@ def runExperiments(logIdentificator, formulaType):
 
     # define helper functions
 
-    #this one encodes the current sentence into the onehot encoding
+    # this one encodes the current sentence into the onehot encoding
     def encode(sentence, times, times3, maxlen=maxlen):
-        num_features = len(chars)+5
+        num_features = len(chars) + 5
         X = np.zeros((1, maxlen, num_features), dtype=np.float32)
-        leftpad = maxlen-len(sentence)
+        leftpad = maxlen - len(sentence)
         times2 = np.cumsum(times)
         for t, char in enumerate(sentence):
             midnight = times3[t].replace(hour=0, minute=0, second=0, microsecond=0)
-            timesincemidnight = times3[t]-midnight
-            multiset_abstraction = Counter(sentence[:t+1])
+            timesincemidnight = times3[t] - midnight
+            multiset_abstraction = Counter(sentence[:t + 1])
             for c in chars:
-                if c==char:
-                    X[0, t+leftpad, char_indices[c]] = 1
-            X[0, t+leftpad, len(chars)] = t+1
-            X[0, t+leftpad, len(chars)+1] = times[t]/divisor
-            X[0, t+leftpad, len(chars)+2] = times2[t]/divisor2
-            X[0, t+leftpad, len(chars)+3] = timesincemidnight.seconds/86400
-            X[0, t+leftpad, len(chars)+4] = times3[t].weekday()/7
+                if c == char:
+                    X[0, t + leftpad, char_indices[c]] = 1
+            X[0, t + leftpad, len(chars)] = t + 1
+            X[0, t + leftpad, len(chars) + 1] = times[t] / divisor
+            X[0, t + leftpad, len(chars) + 2] = times2[t] / divisor2
+            X[0, t + leftpad, len(chars) + 3] = timesincemidnight.seconds / 86400
+            X[0, t + leftpad, len(chars) + 4] = times3[t].weekday() / 7
         return X
 
-
-
-    #find cycles and modify the probability functionality goes here
+    # find cycles and modify the probability functionality goes here
     stop_symbol_probability_amplifier_current = 1
     start_of_the_cycle_symbol = " "
 
@@ -173,9 +165,11 @@ def runExperiments(logIdentificator, formulaType):
     three_ahead_gt = []
     three_ahead_pred = []
 
-    with open('output_files/results/'+formulaType+'/suffix_and_remaining_time1_%s' % eventlog, 'wb') as csvfile:
+    with open('output_files/results/' + formulaType + '/suffix_and_remaining_time1_%s' % eventlog, 'wb') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        spamwriter.writerow(["Prefix length", "Groud truth", "Predicted", "Levenshtein", "Damerau", "Jaccard", "Ground truth times", "Predicted times", "RMSE", "MAE", "Median AE"])
+        spamwriter.writerow(
+            ["Prefix length", "Groud truth", "Predicted", "Levenshtein", "Damerau", "Jaccard", "Ground truth times",
+             "Predicted times", "RMSE", "MAE", "Median AE"])
         for prefix_size in range(prefix_size_pred_from, prefix_size_pred_to):
 
             lines_s, lines_t_s, lines_t2_s, lines_t3_s = selectFormulaVerifiedTraces(lines, lines_t, lines_t2, lines_t3,
@@ -188,33 +182,31 @@ def runExperiments(logIdentificator, formulaType):
                 cropped_line = ''.join(line[:prefix_size])
                 cropped_times = times[:prefix_size]
                 cropped_times3 = times3[:prefix_size]
-                if len(times2)<prefix_size:
-                    continue # make no prediction for this case, since this case has ended already
-                ground_truth = ''.join(line[prefix_size:prefix_size+predict_size])
-                ground_truth_t = times2[prefix_size-1]
-                case_end_time = times2[len(times2)-1]
-                ground_truth_t = case_end_time-ground_truth_t
+                if len(times2) < prefix_size:
+                    continue  # make no prediction for this case, since this case has ended already
+                ground_truth = ''.join(line[prefix_size:prefix_size + predict_size])
+                ground_truth_t = times2[prefix_size - 1]
+                case_end_time = times2[len(times2) - 1]
+                ground_truth_t = case_end_time - ground_truth_t
                 predicted = ''
                 total_predicted_time = 0
                 for i in range(predict_size):
                     enc = encode(cropped_line, cropped_times, cropped_times3)
-                    y = model.predict(enc, verbose=0) # make predictions
+                    y = model.predict(enc, verbose=0)  # make predictions
                     # split predictions into seperate activity and time predictions
                     y_char = y[0][0]
                     y_t = y[1][0][0]
-                    prediction = getSymbolAmpl(y_char,target_indices_char,target_char_indices,
+                    prediction = getSymbolAmpl(y_char, target_indices_char, target_char_indices,
                                                start_of_the_cycle_symbol,
-                                               stop_symbol_probability_amplifier_current) # undo one-hot encoding
+                                               stop_symbol_probability_amplifier_current)  # undo one-hot encoding
                     cropped_line += prediction
-
 
                     stop_symbol_probability_amplifier_current, start_of_the_cycle_symbol = amplify(cropped_line)
 
-
-                    if y_t<0:
-                        y_t=0
+                    if y_t < 0:
+                        y_t = 0
                     cropped_times.append(y_t)
-                    if prediction == '!': # end of case was just predicted, therefore, stop predicting further into the future
+                    if prediction == '!':  # end of case was just predicted, therefore, stop predicting further into the future
                         one_ahead_pred.append(total_predicted_time)
                         one_ahead_gt.append(ground_truth_t)
                         print('! predicted, end case')
@@ -224,14 +216,17 @@ def runExperiments(logIdentificator, formulaType):
                     total_predicted_time = total_predicted_time + y_t
                     predicted += prediction
                 output = []
-                if len(ground_truth)>0:
+                if len(ground_truth) > 0:
                     output.append(prefix_size)
                     output.append(unicode(ground_truth).encode("utf-8"))
                     output.append(unicode(predicted).encode("utf-8"))
                     output.append(1 - distance.nlevenshtein(predicted, ground_truth))
-                    dls = 1 - (damerau_levenshtein_distance(unicode(predicted), unicode(ground_truth)) / max(len(predicted),len(ground_truth)))
-                    if dls<0:
-                        dls=0 # we encountered problems with Damerau-Levenshtein Similarity on some linux machines where the default character encoding of the operating system caused it to be negative, this should never be the case
+                    dls = 1 - (
+                        damerau_levenshtein_distance(unicode(predicted), unicode(ground_truth)) / max(len(predicted),
+                                                                                                      len(
+                                                                                                          ground_truth)))
+                    if dls < 0:
+                        dls = 0  # we encountered problems with Damerau-Levenshtein Similarity on some linux machines where the default character encoding of the operating system caused it to be negative, this should never be the case
                     output.append(dls)
                     output.append(1 - distance.jaccard(predicted, ground_truth))
                     output.append(ground_truth_t)
