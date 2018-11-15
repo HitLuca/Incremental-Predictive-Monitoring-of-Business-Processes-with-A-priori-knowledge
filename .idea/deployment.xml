@@ -5,7 +5,7 @@
       <paths name="Freyr FBK">
         <serverdata>
           <mappings>
-            <mapping deploy="/hardmnt/freyr1/data/simonetto/projects/Incremental-Predictive-Monitoring" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/Incremental-Predictive-Monitoring" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
