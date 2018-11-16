@@ -33,9 +33,11 @@ def build_model(max_len, num_features, target_chars):
     main_input = Input(shape=(max_len, num_features), name='main_input')
     processed = main_input
 
-    processed = LSTM(32, return_sequences=False)(processed)
+    processed = Dense(32, activation='tanh')(processed)
     processed = Dropout(0.5)(processed)
-    processed = Dense(16, activation='relu')(processed)
+    processed = LSTM(64, return_sequences=False)(processed)
+    processed = Dropout(0.5)(processed)
+    processed = Dense(32, activation='relu')(processed)
     processed = Dropout(0.5)(processed)
     act_output = Dense(len(target_chars), activation='softmax', name='act_output')(processed)
     time_output = Dense(1, activation='relu', name='time_output')(processed)
@@ -59,8 +61,8 @@ def create_checkpoints_path(log_name):
 
 def train_model(model, checkpoint_name, X, y_a, y_t):
     model_checkpoint = ModelCheckpoint(checkpoint_name, save_best_only=True)
-    lr_reducer = ReduceLROnPlateau(factor=0.5, patience=10, verbose=0)
-    early_stopping = EarlyStopping(monitor='val_loss', patience=30)
+    lr_reducer = ReduceLROnPlateau(factor=0.5, patience=5, verbose=0)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=15)
 
     model.fit(X, {'act_output': y_a,
                   'time_output': y_t},

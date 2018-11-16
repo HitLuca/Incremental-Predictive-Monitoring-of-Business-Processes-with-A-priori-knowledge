@@ -28,7 +28,8 @@ def extract_last_model_checkpoint(log_name, model_type):
 
 
 def extract_declare_model_filename(log_name):
-    return 'declare_models/final_experiments/' + log_name + '.xml'
+    return os.getcwd() + '/declare_models/final_experiments/' + log_name + '.xml'
+
 
 log_settings = {
     '10x5_1S': {
@@ -136,5 +137,5 @@ log_settings = {
         'formula_weak': "<>(\"17\")",
         'prefix_size_pred_from': 6,
         'prefix_size_pred_to': 9
-    },
+    }
 }
