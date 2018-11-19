@@ -1,1 +1,0 @@
-{"ArchiveDocuments": 3, "BookAccomodation": 4, "BookTransport": 5, "UseTransport": 1, "DoSomething": 7, "CollectTickets": 2, "DoSomethingElse": 8, "ApplyForTrip": 0, "ApproveApplication": 6}{"R4": 2, "R5": 0, "R1": 4, "R2": 3, "R3": 1}
