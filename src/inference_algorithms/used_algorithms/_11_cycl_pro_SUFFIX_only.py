@@ -19,9 +19,7 @@ from itertools import izip
 import distance
 import numpy as np
 from formula_verificator import verify_formula_as_compliant
-# noinspection PyProtectedMember
 import shared_variables
-from jellyfish._jellyfish import damerau_levenshtein_distance
 from keras.models import load_model
 from sklearn import metrics
 from support_scripts.prepare_data import amplify, get_symbol_ampl
@@ -94,7 +92,7 @@ def run_experiments(log_name):
     with open(output_filename, 'wb') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         spamwriter.writerow(["Prefix length",
-                             "Groud truth",
+                             "Ground truth",
                              "Predicted",
                              "Damerau-Levenshtein",
                              "Jaccard",
@@ -121,7 +119,7 @@ def run_experiments(log_name):
                                                         prefix_size)
             print("prefix size: " + str(prefix_size))
             print("formulas verified: " + str(len(lines_s)) + " out of : " + str(len(lines)))
-            counterr = 0
+            counter = 0
             for line, times, times2, times3 in izip(lines_s, lines_t_s, lines_t2_s, lines_t3_s):
                 times.append(0)
                 cropped_line = ''.join(line[:prefix_size])
@@ -180,7 +178,7 @@ def run_experiments(log_name):
                         enc = current_prediction_premis.data
                         temp_cropped_line = current_prediction_premis.cropped_line
                         y = model.predict(enc, verbose=0)  # make predictions
-                        # split predictions into seperate activity and time predictions
+                        # split predictions into separate activity and time predictions
                         y_char = y[0][0]
                         y_t = y[1][0][0]
 
@@ -223,13 +221,13 @@ def run_experiments(log_name):
                                                   temp_total_predicted_time,
                                                   current_prediction_premis.probability_of + np.log(probability_this))
                             queue_next_steps_future.put((-temp.probability_of, temp))
-                            # print 'INFORMATION: ' + str(counterr) + ' ' + str(i) + ' ' + str(k) + ' ' + str(j) + ' ' + \
+                            # print 'INFORMATION: ' + str(counter) + ' ' + str(i) + ' ' + str(k) + ' ' + str(j) + ' ' + \
                             #       temp_cropped_line[prefix_size:] + "     " + str(temp.probability_of)
 
                     queue_next_steps = queue_next_steps_future
                     queue_next_steps_future = PriorityQueue()
 
-                counterr += 1
+                counter += 1
 
                 if current_prediction_premis is None:
                     print "Cannot find any trace that is compliant with formula given current beam size"

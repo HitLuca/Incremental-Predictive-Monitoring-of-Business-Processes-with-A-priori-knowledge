@@ -9,18 +9,17 @@ Author: Niek Tax
 from __future__ import division
 
 import csv
+import os
 import time
-from collections import Counter
 from datetime import timedelta
 from itertools import izip
-import os
 
 import distance
 import numpy as np
-from jellyfish import damerau_levenshtein_distance
 from keras.models import load_model
-import shared_variables
 from sklearn import metrics
+
+import shared_variables
 from support_scripts.prepare_data_resource import select_declare_verified_traces, prepare_testing_data
 
 
@@ -29,7 +28,6 @@ def run_experiments(log_name):
     declare_model_filename = shared_variables.extract_declare_model_filename(log_name)
 
     log_settings_dictionary = shared_variables.log_settings[log_name]
-    formula = log_settings_dictionary['formula']
     prefix_size_pred_from = log_settings_dictionary['prefix_size_pred_from']
     prefix_size_pred_to = log_settings_dictionary['prefix_size_pred_to']
 
@@ -62,7 +60,6 @@ def run_experiments(log_name):
 
     # define helper functions
     # this one encodes the current sentence into the onehot encoding
-    # noinspection PyUnusedLocal
     def encode(sentence, times_enc, times3_enc, maxlen_enc=maxlen):
         num_features = len(chars) + 5
         x = np.zeros((1, maxlen_enc, num_features), dtype=np.float32)
@@ -71,7 +68,6 @@ def run_experiments(log_name):
         for v, char in enumerate(sentence):
             midnight_enc = times3_enc[v].replace(hour=0, minute=0, second=0, microsecond=0)
             timesincemidnight_enc = times3_enc[v] - midnight_enc
-            multiset_abstraction = Counter(sentence[:v + 1])
             for c in chars:
                 if c == char:
                     x[0, v + leftpad, char_indices[c]] = 1
@@ -97,7 +93,7 @@ def run_experiments(log_name):
 
     with open(output_filename, 'wb') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        spamwriter.writerow(["Prefix length", "Groud truth", "Predicted", "Damerau-Levenshtein", "Jaccard",
+        spamwriter.writerow(["Prefix length", "Ground truth", "Predicted", "Damerau-Levenshtein", "Jaccard",
                              "Ground truth times", "Predicted times", "RMSE", "MAE", "Median AE"])
         for prefix_size in range(prefix_size_pred_from, prefix_size_pred_to):
             lines_s, \
@@ -133,7 +129,7 @@ def run_experiments(log_name):
                 for i in range(predict_size):
                     enc = encode(cropped_line, cropped_times, cropped_times3)
                     y = model.predict(enc, verbose=0)  # make predictions
-                    # split predictions into seperate activity and time predictions
+                    # split predictions into separate activity and time predictions
                     y_char = y[0][0]
                     y_t = y[1][0][0]
                     prediction = get_symbol(y_char)  # undo one-hot encoding

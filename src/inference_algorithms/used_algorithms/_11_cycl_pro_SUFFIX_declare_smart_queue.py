@@ -18,8 +18,6 @@ from itertools import izip
 
 import distance
 from formula_verificator import verify_with_data
-# noinspection PyProtectedMember
-from jellyfish._jellyfish import damerau_levenshtein_distance
 from keras.models import load_model
 import shared_variables
 from shared_variables import get_int_from_unicode

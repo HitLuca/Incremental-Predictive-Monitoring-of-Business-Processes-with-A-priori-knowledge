@@ -3,28 +3,31 @@ This file was created to manage running of experiments.
 
 ## settings are in the shared variables file
 """
-
 import train_cf
 import train_cfr
 import tensorflow as tf
 import keras.backend as K
 
-from inference_algorithms.used_algorithms import _6_evaluate_baseline_SUFFIX_only, \
-    _6_evaluate_baseline_SUFFIX_and_group, _11_cycl_pro_SUFFIX_only, _11_cycl_pro_SUFFIX_resource_LTL, \
-    _11_cycl_pro_SUFFIX_declare_smart_queue
+from inference_algorithms.used_algorithms import \
+    _6_evaluate_baseline_SUFFIX_only as baseline_1_cf, \
+    _6_evaluate_baseline_SUFFIX_and_group as baseline_1_cfr, \
+    _11_cycl_pro_SUFFIX_only as baseline_2_cf, \
+    _11_cycl_pro_SUFFIX_resource_LTL as baseline_2_cfr, \
+    _11_cycl_pro_SUFFIX_declare_smart_queue as new_approach_cfr
 
 
-def train_and_evaluate_cf(log_name):
-    # train_cf.train(log_name)
-    _6_evaluate_baseline_SUFFIX_only.run_experiments(log_name)
-    _11_cycl_pro_SUFFIX_only.run_experiments(log_name)
+def evaluate_baselines_cf(log_name):
+    baseline_1_cf.run_experiments(log_name)
+    baseline_2_cf.run_experiments(log_name)
 
 
-def train_and_evaluate_cfr(log_name):
-    # train_cfr.train(log_name)
-    _6_evaluate_baseline_SUFFIX_and_group.run_experiments(log_name)
-    _11_cycl_pro_SUFFIX_resource_LTL.run_experiments(log_name)
-    _11_cycl_pro_SUFFIX_declare_smart_queue.run_experiments(log_name)
+def evaluate_baselines_cfr(log_name):
+    baseline_1_cfr.run_experiments(log_name)
+    baseline_2_cfr.run_experiments(log_name)
+
+
+def evaluate_new_approach_cfr(log_name):
+    new_approach_cfr.run_experiments(log_name)
 
 
 log_names = ['10x5_1S', '10x5_1W', '10x5_3S',
@@ -40,9 +43,20 @@ def main():
 
     for log_name in log_names:
         print(log_name)
-        train_and_evaluate_cf(log_name)
-        train_and_evaluate_cfr(log_name)
-        print()
+        train_cf.train(log_name)
+        evaluate_baselines_cf(log_name)
+        print
+
+    for log_name in log_names:
+        print(log_name)
+        train_cfr.train(log_name)
+        evaluate_baselines_cfr(log_name)
+        print
+
+    for log_name in log_names:
+        print(log_name)
+        evaluate_new_approach_cfr(log_name)
+        print
 
 
 if __name__ == "__main__":

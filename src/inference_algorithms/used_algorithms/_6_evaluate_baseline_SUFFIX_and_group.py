@@ -17,7 +17,6 @@ import os
 
 import distance
 import numpy as np
-from jellyfish import damerau_levenshtein_distance
 from keras.models import load_model
 from sklearn import metrics
 import shared_variables

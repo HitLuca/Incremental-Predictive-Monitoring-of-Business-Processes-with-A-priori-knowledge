@@ -52,14 +52,14 @@ def parse_log(filepath, two_predictions=False):
 
     with open(filepath, 'r') as f:
         csv_reader = csv.reader(f, delimiter=',', quotechar='|')
-        headers = next(csv_reader)
+        csv_headers = next(csv_reader)
 
         for row in csv_reader:
-            score_1 = float(row[headers.index(label_1)])
+            score_1 = float(row[csv_headers.index(label_1)])
             scores[0].append(score_1)
 
             if two_predictions:
-                score_2 = float(row[headers.index(label_2)])
+                score_2 = float(row[csv_headers.index(label_2)])
                 scores[1].append(score_2)
 
     scores = np.mean(np.array(scores), -1)
@@ -101,7 +101,20 @@ def print_latex_table(populated_table):
 def show_comparison_image(populated_table, reference_table):
     reference_table[populated_table == 0] = 0
 
-    plt.figure()
+    plt.subplots(1, 2)
+    plt.subplot(1, 2, 1)
+    improvement_percentage = (1.0 * np.count_nonzero(populated_table > reference_table) / np.count_nonzero(
+        populated_table)) * 100.0
+    plt.title('better performance (%.2f' % improvement_percentage + '%)')
+    binary_image = np.zeros(populated_table.shape)
+    binary_image[populated_table == 0] = -1.0
+    binary_image[populated_table > reference_table] = 1.0
+    plt.imshow(binary_image[:, [0, 2, 3, 4, 6, 7, 10, 11]], cmap='hot')
+    plt.yticks(range(len(log_names)), log_names)
+    plt.xticks(range(len(headers)), headers, rotation=90)
+
+    plt.subplot(1, 2, 2)
+    plt.title('comparison')
     plt.imshow((populated_table - reference_table)[:, [0, 2, 3, 4, 6, 7, 10, 11]])
     plt.yticks(range(len(log_names)), log_names)
     plt.xticks(range(len(headers)), headers, rotation=90)
@@ -113,7 +126,7 @@ def show_comparison_image(populated_table, reference_table):
 def main():
     populated_table = np.zeros((len(log_names), len(metrics) * len(model_types) * 2))
 
-    base_folderpath = 'output_files/final_experiments/results/'
+    base_folderpath = 'output_files/final_experiments_done/results/'
 
     for log_name in log_names:
         for metric in metrics:
