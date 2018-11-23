@@ -96,6 +96,8 @@ def run_experiments(log_name):
         spamwriter.writerow(["Prefix length", "Ground truth", "Predicted", "Damerau-Levenshtein", "Jaccard",
                              "Ground truth times", "Predicted times", "RMSE", "MAE", "Median AE"])
         for prefix_size in range(prefix_size_pred_from, prefix_size_pred_to):
+            print("prefix size: " + str(prefix_size))
+
             lines_s, \
             lines_id_s, \
             lines_group_s, \
@@ -111,7 +113,6 @@ def run_experiments(log_name):
                                                         lines_t3,
                                                         lines_t4,
                                                         prefix_size)
-            print(prefix_size)
             print("formulas verified: " + str(len(lines_s)) + " out of : " + str(len(lines)))
             for line, times, times2, times3 in izip(lines_s, lines_t_s, lines_t2_s, lines_t3_s):
                 times.append(0)

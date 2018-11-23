@@ -102,6 +102,8 @@ def run_experiments(log_name):
                              "MAE",
                              "Median AE"])
         for prefix_size in range(prefix_size_pred_from, prefix_size_pred_to):
+            print("prefix size: " + str(prefix_size))
+
             lines_s, \
             lines_id_s, \
             lines_group_s, \
@@ -117,7 +119,6 @@ def run_experiments(log_name):
                                                         lines_t3,
                                                         lines_t4,
                                                         prefix_size)
-            print("prefix size: " + str(prefix_size))
             print("formulas verified: " + str(len(lines_s)) + " out of : " + str(len(lines)))
             counter = 0
             for line, times, times2, times3 in izip(lines_s, lines_t_s, lines_t2_s, lines_t3_s):

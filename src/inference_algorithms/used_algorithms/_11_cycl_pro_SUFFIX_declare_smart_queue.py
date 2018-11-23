@@ -108,6 +108,8 @@ def run_experiments(log_name):
 
         # make predictions for different prefix sizes as specified in 'shared variables'
         for prefix_size in range(prefix_size_pred_from, prefix_size_pred_to):
+            print("prefix size: " + str(prefix_size))
+
             lines_s, \
             lines_id_s, \
             lines_group_s, \
@@ -124,7 +126,6 @@ def run_experiments(log_name):
                                                         lines_t4,
                                                         prefix_size)
 
-            print("prefix size: " + str(prefix_size))
             print("formulas verified: " + str(len(lines_s)) + " out of : " + str(len(lines)))
             counterr = 0
             for line, line_id, line_group, times, times2, times3, times4 in izip(lines_s,
@@ -206,7 +207,7 @@ def run_experiments(log_name):
                         temp_cropped_line_group = current_prediction_premis.cropped_line_group
                         temp_cropped_times = current_prediction_premis.cropped_times
                         y = model.predict(enc, verbose=0)  # make predictions
-                        # split predictions into seperate activity and time predictions
+                        # split predictions into separate activity and time predictions
                         y_char = y[0][0]
                         y_group = y[1][0]
                         y_t = y[2][0][0]

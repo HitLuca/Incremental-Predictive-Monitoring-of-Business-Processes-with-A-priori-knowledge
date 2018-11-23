@@ -114,7 +114,7 @@ def show_comparison_image(populated_table, reference_table):
     plt.xticks(range(len(headers)), headers, rotation=90)
 
     plt.subplot(1, 2, 2)
-    plt.title('comparison')
+    plt.title('comparison (%.2f' % np.sum(populated_table - reference_table) + ')')
     plt.imshow((populated_table - reference_table)[:, [0, 2, 3, 4, 6, 7, 10, 11]])
     plt.yticks(range(len(log_names)), log_names)
     plt.xticks(range(len(headers)), headers, rotation=90)
@@ -126,7 +126,7 @@ def show_comparison_image(populated_table, reference_table):
 def main():
     populated_table = np.zeros((len(log_names), len(metrics) * len(model_types) * 2))
 
-    base_folderpath = 'output_files/final_experiments_done/results/'
+    base_folderpath = 'output_files/final_experiments/results/'
 
     for log_name in log_names:
         for metric in metrics:
@@ -141,7 +141,7 @@ def main():
                     pass
 
     show_comparison_image(populated_table, reference_table)
-    print_latex_table(populated_table)
+    # print_latex_table(populated_table)
 
 
 if __name__ == "__main__":

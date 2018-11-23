@@ -107,6 +107,7 @@ def run_experiments(log_name):
                              "Ground truth times", "Predicted times", "RMSE", "MAE", "Median AE", "Ground Truth Group",
                              "Predicted Group", "Damerau-Levenshtein Resource"])
         for prefix_size in range(prefix_size_pred_from, prefix_size_pred_to):
+            print("prefix size: " + str(prefix_size))
 
             lines_s, \
             lines_id_s, \
@@ -124,7 +125,6 @@ def run_experiments(log_name):
                                                         lines_t4,
                                                         prefix_size)
 
-            print(prefix_size)
             print("formulas verified: " + str(len(lines_s)) + " out of : " + str(len(lines)))
             for line, line_id, line_group, times, times2, times3, times4 in izip(lines_s,
                                                                                  lines_id_s,

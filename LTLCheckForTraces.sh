@@ -2,4 +2,4 @@
 
 echo Trace checker started
 
-java -jar LTLCheckForTraces.jar > /dev/null
+java -jar LTLCheckForTraces.jar
