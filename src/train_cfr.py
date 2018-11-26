@@ -24,7 +24,7 @@ from itertools import izip
 
 import numpy as np
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-from keras.layers import Input, Dropout
+from keras.layers import Input, Dropout, BatchNormalization, LeakyReLU
 from keras.layers.core import Dense
 from keras.layers.recurrent import LSTM
 from keras.models import Model
@@ -37,12 +37,18 @@ def build_model(max_len, num_features, target_chars, target_chars_group):
     main_input = Input(shape=(max_len, num_features), name='main_input')
     processed = main_input
 
-    processed = Dense(32, activation='tanh')(processed)
+    processed = Dense(32)(processed)
+    processed = BatchNormalization()(processed)
+    processed = LeakyReLU()(processed)
     processed = Dropout(0.5)(processed)
-    processed = LSTM(64, return_sequences=False)(processed)
+
+    processed = LSTM(64, return_sequences=False, recurrent_dropout=0.5)(processed)
+
+    processed = Dense(32)(processed)
+    processed = BatchNormalization()(processed)
+    processed = LeakyReLU()(processed)
     processed = Dropout(0.5)(processed)
-    processed = Dense(32, activation='relu')(processed)
-    processed = Dropout(0.5)(processed)
+
     act_output = Dense(len(target_chars), activation='softmax', name='act_output')(processed)
     group_output = Dense(len(target_chars_group), activation='softmax', name='group_output')(processed)
     time_output = Dense(1, activation='relu', name='time_output')(processed)
@@ -56,8 +62,8 @@ def build_model(max_len, num_features, target_chars, target_chars_group):
     return model
 
 
-def create_checkpoints_path(log_name):
-    folder_path = 'output_files/final_experiments/models/CFR/' + log_name + '/'
+def create_checkpoints_path(log_name, models_folder):
+    folder_path = 'output_files/' + models_folder + '/models/CFR/' + log_name + '/'
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     checkpoint_name = folder_path + 'model_{epoch:03d}-{val_loss:.3f}.h5'
@@ -66,8 +72,8 @@ def create_checkpoints_path(log_name):
 
 def train_model(model, checkpoint_name, X, y_a, y_t, y_g):
     model_checkpoint = ModelCheckpoint(checkpoint_name, save_best_only=True)
-    lr_reducer = ReduceLROnPlateau(factor=0.5, patience=5, verbose=0)
-    early_stopping = EarlyStopping(monitor='val_loss', patience=15)
+    lr_reducer = ReduceLROnPlateau(factor=0.5, patience=3, verbose=1)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=6)
 
     model.fit(X, {'act_output': y_a,
                   'time_output': y_t,
@@ -79,7 +85,7 @@ def train_model(model, checkpoint_name, X, y_a, y_t, y_g):
 
 
 # noinspection PyUnusedLocal
-def train(log_name):
+def train(log_name, models_folder):
     lines = []
     lines_group = []
     timeseqs = []
@@ -137,21 +143,21 @@ def train(log_name):
     divisor2 = np.mean([item for sublist in timeseqs2 for item in sublist])
     print('divisor2: {}'.format(divisor2))
 
-    elems_per_fold = int(round(numlines / 3))
-    fold1 = lines[:elems_per_fold]
-    fold1_group = lines_group[:elems_per_fold]
-    fold1_t = timeseqs[:elems_per_fold]
-    fold1_t2 = timeseqs2[:elems_per_fold]
+    elements_per_fold = int(round(numlines / 3))
+    fold1 = lines[:elements_per_fold]
+    fold1_group = lines_group[:elements_per_fold]
+    fold1_t = timeseqs[:elements_per_fold]
+    fold1_t2 = timeseqs2[:elements_per_fold]
 
-    fold2 = lines[elems_per_fold:2 * elems_per_fold]
-    fold2_group = lines_group[elems_per_fold:2 * elems_per_fold]
-    fold2_t = timeseqs[elems_per_fold:2 * elems_per_fold]
-    fold2_t2 = timeseqs2[elems_per_fold:2 * elems_per_fold]
+    fold2 = lines[elements_per_fold:2 * elements_per_fold]
+    fold2_group = lines_group[elements_per_fold:2 * elements_per_fold]
+    fold2_t = timeseqs[elements_per_fold:2 * elements_per_fold]
+    fold2_t2 = timeseqs2[elements_per_fold:2 * elements_per_fold]
 
-    fold3 = lines[2 * elems_per_fold:]
-    fold3_group = lines_group[2 * elems_per_fold:]
-    fold3_t = timeseqs[2 * elems_per_fold:]
-    fold3_t2 = timeseqs2[2 * elems_per_fold:]
+    fold3 = lines[2 * elements_per_fold:]
+    fold3_group = lines_group[2 * elements_per_fold:]
+    fold3_t = timeseqs[2 * elements_per_fold:]
+    fold3_t2 = timeseqs2[2 * elements_per_fold:]
 
     lines = fold1 + fold2
     lines_group = fold1_group + fold2_group
@@ -247,46 +253,14 @@ def train(log_name):
     timeseqs4.append(times4)
     numlines += 1
 
-    elems_per_fold = int(round(numlines / 3))
-    fold1 = lines[:elems_per_fold]
-    fold1_group = lines_group[:elems_per_fold]
-    fold1_t = timeseqs[:elems_per_fold]
-    fold1_t2 = timeseqs2[:elems_per_fold]
-    fold1_t3 = timeseqs3[:elems_per_fold]
-    fold1_t4 = timeseqs4[:elems_per_fold]
-    with open('output_files/folds/fold1.csv', 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for row, timeseq in izip(fold1, fold1_t):
-            spamwriter.writerow([unicode(s).encode("utf-8") + '#{}'.format(t) for s, t in izip(row, timeseq)])
+    elements_per_fold = int(round(numlines / 3))
 
-    fold2 = lines[elems_per_fold:2 * elems_per_fold]
-    fold2_group = lines_group[elems_per_fold:2 * elems_per_fold]
-    fold2_t = timeseqs[elems_per_fold:2 * elems_per_fold]
-    fold2_t2 = timeseqs2[elems_per_fold:2 * elems_per_fold]
-    fold2_t3 = timeseqs3[elems_per_fold:2 * elems_per_fold]
-    fold2_t4 = timeseqs4[elems_per_fold:2 * elems_per_fold]
-    with open('output_files/folds/fold2.csv', 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for row, timeseq in izip(fold2, fold2_t):
-            spamwriter.writerow([unicode(s).encode("utf-8") + '#{}'.format(t) for s, t in izip(row, timeseq)])
-
-    fold3 = lines[2 * elems_per_fold:]
-    fold3_group = lines_group[2 * elems_per_fold:]
-    fold3_t = timeseqs[2 * elems_per_fold:]
-    fold3_t2 = timeseqs2[2 * elems_per_fold:]
-    fold3_t3 = timeseqs3[2 * elems_per_fold:]
-    fold3_t4 = timeseqs4[2 * elems_per_fold:]
-    with open('output_files/folds/fold3.csv', 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for row, timeseq in izip(fold3, fold3_t):
-            spamwriter.writerow([unicode(s).encode("utf-8") + '#{}'.format(t) for s, t in izip(row, timeseq)])
-
-    lines = fold1 + fold2
-    lines_group = fold1_group + fold2_group
-    lines_t = fold1_t + fold2_t
-    lines_t2 = fold1_t2 + fold2_t2
-    lines_t3 = fold1_t3 + fold2_t3
-    lines_t4 = fold1_t4 + fold2_t4
+    lines = lines[:-elements_per_fold]
+    lines_group = lines_group[:elements_per_fold]
+    lines_t = timeseqs[:-elements_per_fold]
+    lines_t2 = timeseqs2[:-elements_per_fold]
+    lines_t3 = timeseqs3[:-elements_per_fold]
+    lines_t4 = timeseqs4[:-elements_per_fold]
 
     step = 1
     sentences = []
@@ -372,5 +346,5 @@ def train(log_name):
         y_t[i] = next_t / divisor
 
     model = build_model(maxlen, num_features, target_chars, target_chars_group)
-    checkpoint_name = create_checkpoints_path(log_name)
+    checkpoint_name = create_checkpoints_path(log_name, models_folder)
     train_model(model, checkpoint_name, X, y_a, y_t, y_g)

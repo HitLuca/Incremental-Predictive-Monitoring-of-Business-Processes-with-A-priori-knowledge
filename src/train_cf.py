@@ -20,7 +20,7 @@ import os
 
 import numpy as np
 from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-from keras.layers import Input, Dropout
+from keras.layers import Input, Dropout, BatchNormalization, LeakyReLU, regularizers
 from keras.layers.core import Dense
 from keras.layers.recurrent import LSTM
 from keras.models import Model
@@ -33,12 +33,18 @@ def build_model(max_len, num_features, target_chars):
     main_input = Input(shape=(max_len, num_features), name='main_input')
     processed = main_input
 
-    processed = Dense(32, activation='tanh')(processed)
+    processed = Dense(32)(processed)
+    processed = BatchNormalization()(processed)
+    processed = LeakyReLU()(processed)
     processed = Dropout(0.5)(processed)
-    processed = LSTM(64, return_sequences=False)(processed)
+
+    processed = LSTM(64, return_sequences=False, recurrent_dropout=0.5)(processed)
+
+    processed = Dense(32)(processed)
+    processed = BatchNormalization()(processed)
+    processed = LeakyReLU()(processed)
     processed = Dropout(0.5)(processed)
-    processed = Dense(32, activation='relu')(processed)
-    processed = Dropout(0.5)(processed)
+
     act_output = Dense(len(target_chars), activation='softmax', name='act_output')(processed)
     time_output = Dense(1, activation='relu', name='time_output')(processed)
 
@@ -51,8 +57,8 @@ def build_model(max_len, num_features, target_chars):
     return model
 
 
-def create_checkpoints_path(log_name):
-    folder_path = 'output_files/final_experiments/models/CF/' + log_name + '/'
+def create_checkpoints_path(log_name, models_folder):
+    folder_path = 'output_files/' + models_folder + '/models/CF/' + log_name + '/'
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     checkpoint_name = folder_path + 'model_{epoch:03d}-{val_loss:.3f}.h5'
@@ -61,8 +67,8 @@ def create_checkpoints_path(log_name):
 
 def train_model(model, checkpoint_name, X, y_a, y_t):
     model_checkpoint = ModelCheckpoint(checkpoint_name, save_best_only=True)
-    lr_reducer = ReduceLROnPlateau(factor=0.5, patience=5, verbose=0)
-    early_stopping = EarlyStopping(monitor='val_loss', patience=15)
+    lr_reducer = ReduceLROnPlateau(factor=0.5, patience=3, verbose=1)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=6)
 
     model.fit(X, {'act_output': y_a,
                   'time_output': y_t},
@@ -72,145 +78,54 @@ def train_model(model, checkpoint_name, X, y_a, y_t):
               epochs=300)
 
 
-def load_dataset(filename):
-        dataset = []
-        current_case = []
-        current_case_name = ''
-        case_start_time = 0
-        last_event_time = 0
-
-        max_case_length = 0
-        max_activity_id = 0
-        max_resource_id = 0
-        max_elapsed_time_case_start = 0
-        max_elapsed_time_last_event = 0
-
-        csv_file = open('../data/final_experiments/%s.csv' % filename, 'r')
-        csv_reader = csv.reader(csv_file, delimiter=',', quotechar='|')
-        next(csv_reader, None)
-
-        for row in csv_reader:
-            case_name = row[0]
-            activity_id = int(row[1])
-            timestamp_datetime = datetime.strptime(row[2], '%Y-%m-%d %H:%M:%S')
-            timestamp_seconds = time.mktime(timestamp_datetime.timetuple())
-            resource_id = int(row[3])
-
-            if case_name != current_case_name:
-
-                if len(current_case) > 0:
-                    dataset.append(current_case)
-                current_case = []
-                current_case_name = case_name
-                case_start_time = timestamp_seconds
-
-            elapsed_time_case_start = timestamp_seconds - case_start_time
-            elapsed_time_last_event = timestamp_seconds - last_event_time
-            day_of_week_normalized = timestamp_datetime.weekday() / 7.0
-            time_since_midnight_normalized = (timestamp_datetime - timestamp_datetime.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds() / 86400.0
-
-            if len(current_case) > max_case_length:
-                max_case_length = len(current_case)
-            if activity_id > max_activity_id:
-                max_activity_id = activity_id
-            if resource_id > max_resource_id:
-                max_resource_id = resource_id
-            if elapsed_time_case_start > max_elapsed_time_case_start:
-                max_elapsed_time_case_start = elapsed_time_case_start
-            if elapsed_time_last_event > max_elapsed_time_last_event:
-                max_elapsed_time_last_event = elapsed_time_last_event
-
-            last_event_time = timestamp_seconds
-
-            current_case.append([activity_id, resource_id, elapsed_time_case_start, elapsed_time_last_event, time_since_midnight_normalized, day_of_week_normalized])
-
-        return dataset, (max_case_length, max_activity_id, max_resource_id, max_elapsed_time_case_start, max_elapsed_time_last_event)
-
-
-def pad_dataset(dataset, max_case_length, max_activity_id, max_resource_id):
-    padding_element = [max_activity_id+1, max_resource_id+1, 0, 0, 0, 0]
-    for i in range(len(dataset)):
-        case_length = len(dataset[i])
-        for _ in range(case_length, max_case_length+2):
-            dataset[i].append(padding_element)
-
-
-def train(log_name):
-    # dataset, limits = load_dataset(eventlog)
-    # (max_case_length, max_activity_id, max_resource_id, max_elapsed_time_case_start, max_elapsed_time_last_event) = limits
-    # pad_dataset(dataset, max_case_length, max_activity_id, max_resource_id)
-    #
-    # dataset = np.array(dataset, dtype=np.int32)
-    #
-    # print(max_activity_id)
-    # X = np.eye(max_activity_id+2)[dataset[:, :, 0]]
-    # X = np.concatenate((X, dataset[:, :, 2:]), -1)
-    # print(X.shape)
-    #
-    # max_length, num_features = X.shape[1:]
-    # max_activity_id += 1
-    #
-    # X[:, :, -4] /= max_elapsed_time_case_start
-    # X[:, :, -3] /= max_elapsed_time_last_event
-    #
-    # n = X.shape[0]
-    #
-    # y = X[:, -1, :]
-    # X = X[:, :-1, :]
-    #
-    # for i in range(1, max_case_length-1):
-    #     X_1 = np.zeros
-    #     X = np.concatenate
-
-
-
+def train(log_name, models_folder):
     lines = []  # list of all the activity sequences
     timeseqs = []  # time sequences (differences between two events)
     timeseqs2 = []  # time sequences (differences between the current and first)
 
     # helper variables
-    lastcase = ''
+    last_case = ''
     line = ''  # sequence of activities for one case
-    firstline = True
+    first_line = True
     times = []
     times2 = []
-    numlines = 0
-    casestarttime = None
-    lasteventtime = None
+    num_lines = 0
+    case_start_time = None
+    last_event_time = None
 
     csvfile = open('../data/final_experiments/%s.csv' % log_name, 'r')
-    spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
-    next(spamreader, None)  # skip the headers
+    csv_reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+    next(csv_reader, None)  # skip the headers
 
-    for row in spamreader:  # the rows are "CaseID,ActivityID,CompleteTimestamp"
+    for row in csv_reader:  # the rows are "CaseID,ActivityID,CompleteTimestamp"
         t = time.strptime(row[2], "%Y-%m-%d %H:%M:%S")  # creates a datetime object from row[2]
-        if row[0] != lastcase:  # 'lastcase' is to save the last executed case for the loop
-            casestarttime = t
-            lasteventtime = t
-            lastcase = row[0]
-            if not firstline:  # here we actually add thesequences to the lists
+        if row[0] != last_case:  # 'last_case' is to save the last executed case for the loop
+            case_start_time = t
+            last_event_time = t
+            last_case = row[0]
+            if not first_line:  # here we actually add the sequences to the lists
                 lines.append(line)
                 timeseqs.append(times)
                 timeseqs2.append(times2)
             line = ''
             times = []
             times2 = []
-            numlines += 1
+            num_lines += 1
         line += get_unicode_from_int(row[1])
-        timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(lasteventtime))
-        timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(casestarttime))
-        timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
-        timediff2 = 86400 * timesincecasestart.days + timesincecasestart.seconds
-        times.append(timediff)
-        times2.append(timediff2)
-        lasteventtime = t
-        firstline = False
+        time_since_last_event = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(last_event_time))
+        time_since_case_start = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(case_start_time))
+        time_diff = 86400 * time_since_last_event.days + time_since_last_event.seconds
+        time_diff2 = 86400 * time_since_case_start.days + time_since_case_start.seconds
+        times.append(time_diff)
+        times2.append(time_diff2)
+        last_event_time = t
+        first_line = False
 
     # add last case
     lines.append(line)
     timeseqs.append(times)
     timeseqs2.append(times2)
-    numlines += 1
+    num_lines += 1
 
     divisor = np.mean([item for sublist in timeseqs for item in sublist])  # average time between events
     print('divisor: {}'.format(divisor))
@@ -219,7 +134,7 @@ def train(log_name):
     print('divisor2: {}'.format(divisor2))
 
     # separate training data into 2(out of 3) parts
-    elems_per_fold = int(round(numlines / 3))
+    elements_per_fold = int(round(num_lines / 3))
 
     many = 0
     for i in range(len(lines)):
@@ -228,8 +143,8 @@ def train(log_name):
     print("average length of the trace: ", many / len(lines))
     print("number of traces: ", len(lines))
 
-    fold1 = lines[:elems_per_fold]
-    fold2 = lines[elems_per_fold:2 * elems_per_fold]
+    fold1 = lines[:elements_per_fold]
+    fold2 = lines[elements_per_fold:2 * elements_per_fold]
     lines = fold1 + fold2
 
     lines = map(lambda x: x + '!', lines)  # put delimiter symbol
@@ -246,11 +161,11 @@ def train(log_name):
     target_char_indices = dict((c, i) for i, c in enumerate(target_chars))
 
     csvfile = open('../data/final_experiments/%s.csv' % log_name, 'r')
-    spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
-    next(spamreader, None)  # skip the headers
-    lastcase = ''
+    csv_reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+    next(csv_reader, None)  # skip the headers
+    last_case = ''
     line = ''
-    firstline = True
+    first_line = True
     lines = []
     timeseqs = []
     timeseqs2 = []
@@ -260,17 +175,17 @@ def train(log_name):
     times2 = []
     times3 = []
     times4 = []
-    numlines = 0
-    casestarttime = None
-    lasteventtime = None
-    for row in spamreader:
+    num_lines = 0
+    case_start_time = None
+    last_event_time = None
+    for row in csv_reader:
         t = time.strptime(row[2], "%Y-%m-%d %H:%M:%S")
         # new case starts
-        if row[0] != lastcase:
-            casestarttime = t
-            lasteventtime = t
-            lastcase = row[0]
-            if not firstline:
+        if row[0] != last_case:
+            case_start_time = t
+            last_event_time = t
+            last_case = row[0]
+            if not first_line:
                 lines.append(line)
                 timeseqs.append(times)
                 timeseqs2.append(times2)
@@ -281,22 +196,22 @@ def train(log_name):
             times2 = []
             times3 = []
             times4 = []
-            numlines += 1
+            num_lines += 1
         line += get_unicode_from_int(row[1])
-        timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(lasteventtime))
-        timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(casestarttime))
+        time_since_last_event = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(last_event_time))
+        time_since_case_start = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(case_start_time))
         midnight = datetime.fromtimestamp(time.mktime(t)).replace(hour=0, minute=0, second=0, microsecond=0)
         timesincemidnight = datetime.fromtimestamp(time.mktime(t)) - midnight
-        timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
-        timediff2 = 86400 * timesincecasestart.days + timesincecasestart.seconds
-        timediff3 = timesincemidnight.seconds  # this leaves only time even occured after midnight
+        time_diff = 86400 * time_since_last_event.days + time_since_last_event.seconds
+        time_diff2 = 86400 * time_since_case_start.days + time_since_case_start.seconds
+        timediff3 = timesincemidnight.seconds  # this leaves only time even occurred after midnight
         timediff4 = datetime.fromtimestamp(time.mktime(t)).weekday()  # day of the week
-        times.append(timediff)
-        times2.append(timediff2)
+        times.append(time_diff)
+        times2.append(time_diff2)
         times3.append(timediff3)
         times4.append(timediff4)
-        lasteventtime = t
-        firstline = False
+        last_event_time = t
+        first_line = False
 
     # add last case
     lines.append(line)
@@ -304,42 +219,15 @@ def train(log_name):
     timeseqs2.append(times2)
     timeseqs3.append(times3)
     timeseqs4.append(times4)
-    numlines += 1
+    num_lines += 1
 
-    elems_per_fold = int(round(numlines / 3))
-    fold1 = lines[:elems_per_fold]
-    fold1_t = timeseqs[:elems_per_fold]
-    fold1_t2 = timeseqs2[:elems_per_fold]
-    fold1_t3 = timeseqs3[:elems_per_fold]
-    fold1_t4 = timeseqs4[:elems_per_fold]
+    elements_per_fold = int(round(num_lines / 3))
 
-    with open('output_files/folds/fold1.csv', 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for row, timeseq in izip(fold1, fold1_t):
-            spamwriter.writerow([unicode(s).encode("utf-8") + '#{}'.format(t) for s, t in izip(row, timeseq)])
-
-    fold2 = lines[elems_per_fold:2 * elems_per_fold]
-    fold2_t = timeseqs[elems_per_fold:2 * elems_per_fold]
-    fold2_t2 = timeseqs2[elems_per_fold:2 * elems_per_fold]
-    fold2_t3 = timeseqs3[elems_per_fold:2 * elems_per_fold]
-    fold2_t4 = timeseqs4[elems_per_fold:2 * elems_per_fold]
-    with open('output_files/folds/fold2.csv', 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for row, timeseq in izip(fold2, fold2_t):
-            spamwriter.writerow([unicode(s).encode("utf-8") + '#{}'.format(t) for s, t in izip(row, timeseq)])
-
-    fold3 = lines[2 * elems_per_fold:]
-    fold3_t = timeseqs[2 * elems_per_fold:]
-    with open('output_files/folds/fold3.csv', 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for row, timeseq in izip(fold3, fold3_t):
-            spamwriter.writerow([unicode(s).encode("utf-8") + '#{}'.format(t) for s, t in izip(row, timeseq)])
-
-    lines = fold1 + fold2
-    lines_t = fold1_t + fold2_t
-    lines_t2 = fold1_t2 + fold2_t2
-    lines_t3 = fold1_t3 + fold2_t3
-    lines_t4 = fold1_t4 + fold2_t4
+    lines = lines[:-elements_per_fold]
+    lines_t = timeseqs[:-elements_per_fold]
+    lines_t2 = timeseqs2[:-elements_per_fold]
+    lines_t3 = timeseqs3[:-elements_per_fold]
+    lines_t4 = timeseqs4[:-elements_per_fold]
 
     step = 1
     sentences = []
@@ -411,5 +299,5 @@ def train(log_name):
 
     # model = build_model(max_length, num_features, max_activity_id)
     model = build_model(maxlen, num_features, target_chars)
-    checkpoint_name = create_checkpoints_path(log_name)
+    checkpoint_name = create_checkpoints_path(log_name, models_folder)
     train_model(model, checkpoint_name, X, y_a, y_t)

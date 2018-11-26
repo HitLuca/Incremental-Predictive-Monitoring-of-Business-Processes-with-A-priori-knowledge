@@ -115,7 +115,7 @@ def show_comparison_image(populated_table, reference_table):
 
     plt.subplot(1, 2, 2)
     plt.title('comparison (%.2f' % np.sum(populated_table - reference_table) + ')')
-    plt.imshow((populated_table - reference_table)[:, [0, 2, 3, 4, 6, 7, 10, 11]])
+    plt.imshow((populated_table - reference_table)[:, [0, 2, 3, 4, 6, 7, 10, 11]], vmin=-1, vmax=1, cmap=plt.cm.seismic)
     plt.yticks(range(len(log_names)), log_names)
     plt.xticks(range(len(headers)), headers, rotation=90)
     plt.colorbar()
@@ -126,7 +126,7 @@ def show_comparison_image(populated_table, reference_table):
 def main():
     populated_table = np.zeros((len(log_names), len(metrics) * len(model_types) * 2))
 
-    base_folderpath = 'output_files/final_experiments/results/'
+    base_folderpath = 'output_files/final_experiments_2/results/'
 
     for log_name in log_names:
         for metric in metrics:

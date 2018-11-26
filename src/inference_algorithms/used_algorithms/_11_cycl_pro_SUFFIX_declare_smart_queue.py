@@ -32,12 +32,11 @@ parent_dir = current_dir[:current_dir.rfind(os.path.sep)]
 sys.path.insert(0, parent_dir)
 
 
-def run_experiments(log_name):
-    model_filename = shared_variables.extract_last_model_checkpoint(log_name, 'CFR')
+def run_experiments(log_name, models_folder):
+    model_filename = shared_variables.extract_last_model_checkpoint(log_name, models_folder, 'CFR')
     declare_model_filename = shared_variables.extract_declare_model_filename(log_name)
 
     log_settings_dictionary = shared_variables.log_settings[log_name]
-    formula = log_settings_dictionary['formula']
     prefix_size_pred_from = log_settings_dictionary['prefix_size_pred_from']
     prefix_size_pred_to = log_settings_dictionary['prefix_size_pred_to']
 
@@ -84,7 +83,7 @@ def run_experiments(log_name):
             self.total_predicted_time = tot_predicted_time
             self.probability_of = probability_of
 
-    folder_path = 'output_files/final_experiments/results/declare/'
+    folder_path = 'output_files/' + models_folder + '/results/declare/'
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     output_filename = folder_path + '%s_%s.csv' % (log_name, 'CFR')

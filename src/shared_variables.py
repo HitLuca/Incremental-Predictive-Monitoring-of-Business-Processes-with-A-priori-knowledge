@@ -9,7 +9,7 @@ import os
 
 ascii_offset = 161
 beam_size = 3
-base_folderpath = 'output_files/final_experiments/models/'
+base_folderpath = 'output_files/'
 
 
 def get_unicode_from_int(ch):
@@ -20,8 +20,8 @@ def get_int_from_unicode(unch):
     return int(ord(unch)) - ascii_offset
 
 
-def extract_last_model_checkpoint(log_name, model_type):
-    model_filepath = base_folderpath + model_type + '/' + log_name + '/'
+def extract_last_model_checkpoint(log_name, models_folder,  model_type):
+    model_filepath = base_folderpath + '/' + models_folder + '/models/' + model_type + '/' + log_name + '/'
     list_of_files = glob.glob(model_filepath + '*.h5')
     latest_file = max(list_of_files, key=os.path.getctime)
     return latest_file

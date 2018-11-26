@@ -216,4 +216,4 @@ pip-selfcheck.json
 
 data/old/
 data/Testing10percentForDeclareMiner/
-src/declare_models/other/
+src/experiments_backup/

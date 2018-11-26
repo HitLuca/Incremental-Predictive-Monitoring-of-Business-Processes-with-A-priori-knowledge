@@ -1,4 +1,4 @@
-# Incremental_predictive_monitoring_of_Business_Processes_with_a_priori_knowledge
+# Incremental predictive monitoring of Business Processes with a-priori knowledge
 
 ## Description
 Continuation of [this](https://github.com/kaurjvpld/Incremental-Predictive-Monitoring-of-Business-Processes-with-A-priori-knowledge) project in which a predictive model is tasked to predict the continuation of a business process.
