@@ -88,9 +88,9 @@ def prepare_testing_data(eventlog):
     timeseqs4.append(times4)
     numlines += 1
 
-    divisor = np.mean([item for sublist in timeseqs for item in sublist])
-    divisor2 = np.mean([item for sublist in timeseqs2 for item in sublist])
-    divisor3 = np.mean(map(lambda x: np.mean(map(lambda y: x[len(x) - 1] - y, x)), timeseqs2))
+    divisor = np.max([item for sublist in timeseqs for item in sublist])
+    divisor2 = np.max([item for sublist in timeseqs2 for item in sublist])
+    divisor3 = np.max(map(lambda x: np.max(map(lambda y: x[len(x) - 1] - y, x)), timeseqs2))
 
     elems_per_fold = int(round(numlines / 3))
 

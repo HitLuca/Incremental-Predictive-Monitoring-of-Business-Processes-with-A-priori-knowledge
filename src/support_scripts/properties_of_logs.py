@@ -69,11 +69,11 @@ for i in range(len(onlyfiles)):
     timeseqs3.append(times3)
     numlines += 1
 
-    divisor = np.mean([item for sublist in timeseqs for item in sublist])
+    divisor = np.max([item for sublist in timeseqs for item in sublist])
     # print('divisor: {}'.format(divisor))
-    divisor2 = np.mean([item for sublist in timeseqs2 for item in sublist])
+    divisor2 = np.max([item for sublist in timeseqs2 for item in sublist])
     # print('divisor2: {}'.format(divisor2))
-    divisor3 = np.mean(map(lambda x: np.mean(map(lambda y: x[len(x) - 1] - y, x)), timeseqs2))
+    divisor3 = np.max(map(lambda x: np.max(map(lambda y: x[len(x) - 1] - y, x)), timeseqs2))
     # print('divisor3: {}'.format(divisor3))
 
     elems_per_fold = int(round(numlines / 3))

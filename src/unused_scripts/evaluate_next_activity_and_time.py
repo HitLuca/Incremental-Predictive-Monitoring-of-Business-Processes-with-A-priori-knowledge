@@ -68,9 +68,9 @@ timeseqs.append(times)
 timeseqs2.append(times2)
 numlines += 1
 
-divisor = np.mean([item for sublist in timeseqs for item in sublist])
+divisor = np.max([item for sublist in timeseqs for item in sublist])
 print('divisor: {}'.format(divisor))
-divisor2 = np.mean([item for sublist in timeseqs2 for item in sublist])
+divisor2 = np.max([item for sublist in timeseqs2 for item in sublist])
 print('divisor2: {}'.format(divisor2))
 
 elems_per_fold = int(round(numlines / 3))

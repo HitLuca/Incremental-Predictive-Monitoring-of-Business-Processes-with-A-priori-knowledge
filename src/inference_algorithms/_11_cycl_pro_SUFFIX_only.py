@@ -18,10 +18,11 @@ from itertools import izip
 
 import distance
 import numpy as np
-from formula_verificator import verify_formula_as_compliant
-import shared_variables
 from keras.models import load_model
 from sklearn import metrics
+
+import shared_variables
+from formula_verificator import verify_formula_as_compliant
 from support_scripts.prepare_data import amplify, get_symbol_ampl
 from support_scripts.prepare_data import encode
 from support_scripts.prepare_data_resource import prepare_testing_data, select_declare_verified_traces
