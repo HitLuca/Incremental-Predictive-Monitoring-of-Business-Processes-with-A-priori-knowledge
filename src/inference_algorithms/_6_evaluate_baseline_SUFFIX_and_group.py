@@ -23,8 +23,8 @@ import shared_variables
 from support_scripts.prepare_data_resource import select_declare_verified_traces, prepare_testing_data
 
 
-def run_experiments(log_name, models_folder):
-    model_filename = shared_variables.extract_last_model_checkpoint(log_name, models_folder, 'CFR')
+def run_experiments(log_name, models_folder, fold):
+    model_filename = shared_variables.extract_last_model_checkpoint(log_name, models_folder, fold, 'CFR')
     declare_model_filename = shared_variables.extract_declare_model_filename(log_name)
 
     log_settings_dictionary = shared_variables.log_settings[log_name]
@@ -95,7 +95,7 @@ def run_experiments(log_name, models_folder):
     one_ahead_gt = []
     one_ahead_pred = []
 
-    folder_path = 'output_files/' + models_folder + '/results/baseline/'
+    folder_path = 'output_files/' + models_folder + '/' + str(fold) + '/results/baseline/'
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     output_filename = folder_path + '%s_%s.csv' % (log_name, 'CFR')

@@ -15,21 +15,21 @@ class Evaluator:
         pass
 
     @staticmethod
-    def _start_server_and_evaluate(evaluation, log_name, models_folder):
+    def _start_server_and_evaluate(evaluation, log_name, models_folder, fold):
         p = subprocess.Popen(Evaluator._server_start_instructions)
-        evaluation.run_experiments(log_name, models_folder)
+        evaluation.run_experiments(log_name, models_folder, fold)
         p.terminate()
         p.wait()
 
     @staticmethod
-    def evaluate_all(log_name, models_folder):
+    def evaluate_all(log_name, models_folder, fold):
         print('baseline_1 CF')
-        Evaluator._start_server_and_evaluate(baseline_1_cf, log_name, models_folder)
+        Evaluator._start_server_and_evaluate(baseline_1_cf, log_name, models_folder, fold)
         print('baseline_2 CF')
-        Evaluator._start_server_and_evaluate(baseline_2_cf, log_name, models_folder)
+        Evaluator._start_server_and_evaluate(baseline_2_cf, log_name, models_folder, fold)
         print('baseline_1 CFR')
-        Evaluator._start_server_and_evaluate(baseline_1_cfr, log_name, models_folder)
+        Evaluator._start_server_and_evaluate(baseline_1_cfr, log_name, models_folder, fold)
         print('baseline_2 CFR')
-        Evaluator._start_server_and_evaluate(baseline_2_cfr, log_name, models_folder)
+        Evaluator._start_server_and_evaluate(baseline_2_cfr, log_name, models_folder, fold)
         # print('new method')
-        # Evaluator._start_server_and_evaluate(new_approach_cfr, log_name, models_folder)
+        # Evaluator._start_server_and_evaluate(new_approach_cfr, log_name, models_folder, fold)

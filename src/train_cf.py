@@ -63,8 +63,8 @@ class TrainCF:
         return model
 
     @staticmethod
-    def _create_checkpoints_path(log_name, models_folder):
-        folder_path = 'output_files/' + models_folder + '/models/CF/' + log_name + '/'
+    def _create_checkpoints_path(log_name, models_folder, fold):
+        folder_path = 'output_files/' + models_folder + '/' + str(fold) + '/models/CF/' + log_name + '/'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
         checkpoint_name = folder_path + 'model_{epoch:03d}-{val_loss:.3f}.h5'
@@ -121,7 +121,7 @@ class TrainCF:
         print(len(dataset))
         
     @staticmethod
-    def train(log_name, models_folder):
+    def train(log_name, models_folder, folds):
         # TrainCF._load_dataset(log_name)
 
         lines = []  # list of all the activity sequences
@@ -346,7 +346,8 @@ class TrainCF:
                     y_a[i, target_char_indices[c]] = softness / (len(target_chars) - 1)
             y_t[i] = next_t / divisor
 
-        # model = build_model(max_length, num_features, max_activity_id)
-        model = TrainCF._build_model(maxlen, num_features, target_chars)
-        checkpoint_name = TrainCF._create_checkpoints_path(log_name, models_folder)
-        TrainCF._train_model(model, checkpoint_name, X, y_a, y_t)
+        for fold in range(folds):
+            # model = build_model(max_length, num_features, max_activity_id)
+            model = TrainCF._build_model(maxlen, num_features, target_chars)
+            checkpoint_name = TrainCF._create_checkpoints_path(log_name, models_folder, fold)
+            TrainCF._train_model(model, checkpoint_name, X, y_a, y_t)

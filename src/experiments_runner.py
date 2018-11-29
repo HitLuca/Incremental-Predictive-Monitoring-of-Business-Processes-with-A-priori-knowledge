@@ -18,13 +18,14 @@ class ExperimentRunner:
         '50x5_3S'
     ]  # , 'BPI2017_50k']
 
-    _models_folder = 'final_experiments_4'
+    _models_folder = 'final_experiments_5'
 
     def __init__(self):
         pass
 
     @staticmethod
     def run_experiments():
+        folds = 3
         config = tf.ConfigProto(intra_op_parallelism_threads=4, inter_op_parallelism_threads=4,
                                 allow_soft_placement=True)
         session = tf.Session(config=config)
@@ -32,12 +33,12 @@ class ExperimentRunner:
 
         for log_name in ExperimentRunner._log_names:
             print(log_name)
-            TrainCF.train(log_name, ExperimentRunner._models_folder)
-            TrainCFR.train(log_name, ExperimentRunner._models_folder)
-            try:
-                Evaluator.evaluate_all(log_name, ExperimentRunner._models_folder)
-            except:
-                Evaluator.evaluate_all(log_name, ExperimentRunner._models_folder)
+            TrainCF.train(log_name, ExperimentRunner._models_folder, folds)
+            TrainCFR.train(log_name, ExperimentRunner._models_folder, folds)
+            # try:
+            #     Evaluator.evaluate_all(log_name, ExperimentRunner._models_folder, folds)
+            # except:
+            #     Evaluator.evaluate_all(log_name, ExperimentRunner._models_folder, folds)
 
 
 if __name__ == "__main__":

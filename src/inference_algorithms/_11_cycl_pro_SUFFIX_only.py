@@ -27,16 +27,9 @@ from support_scripts.prepare_data import amplify, get_symbol_ampl
 from support_scripts.prepare_data import encode
 from support_scripts.prepare_data_resource import prepare_testing_data, select_declare_verified_traces
 
-current_path = os.path.abspath(getsourcefile(lambda: 0))
-current_dir = os.path.dirname(current_path)
-parent_dir = current_dir[:current_dir.rfind(os.path.sep)]
-
-sys.path.insert(0, parent_dir)
-
-
-def run_experiments(log_name, models_folder):
+def run_experiments(log_name, models_folder, fold):
     beam_size = shared_variables.beam_size
-    model_filename = shared_variables.extract_last_model_checkpoint(log_name, models_folder, 'CF')
+    model_filename = shared_variables.extract_last_model_checkpoint(log_name, models_folder, fold, 'CF')
     declare_model_filename = shared_variables.extract_declare_model_filename(log_name)
 
     log_settings_dictionary = shared_variables.log_settings[log_name]
@@ -85,7 +78,7 @@ def run_experiments(log_name, models_folder):
             self.total_predicted_time = tot_predicted_time
             self.probability_of = probability_of
 
-    folder_path = 'output_files/' + models_folder + '/results/LTL/'
+    folder_path = 'output_files/' + models_folder + '/' + str(fold) + '/results/LTL/'
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     output_filename = folder_path + '%s_%s.csv' % (log_name, 'CF')

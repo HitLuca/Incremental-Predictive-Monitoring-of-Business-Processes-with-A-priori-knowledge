@@ -68,8 +68,8 @@ class TrainCFR:
         return model
 
     @staticmethod
-    def _create_checkpoints_path(log_name, models_folder):
-        folder_path = 'output_files/' + models_folder + '/models/CFR/' + log_name + '/'
+    def _create_checkpoints_path(log_name, models_folder, fold):
+        folder_path = 'output_files/' + models_folder + '/' + str(fold) + '/models/CFR/' + log_name + '/'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
         checkpoint_name = folder_path + 'model_{epoch:03d}-{val_loss:.3f}.h5'
@@ -90,7 +90,7 @@ class TrainCFR:
                   epochs=300)
 
     @staticmethod
-    def train(log_name, models_folder):
+    def train(log_name, models_folder, folds):
         lines = []
         lines_group = []
         timeseqs = []
@@ -341,6 +341,7 @@ class TrainCFR:
                     y_g[i, target_char_indices_group[g]] = softness / (len(target_chars_group) - 1)
             y_t[i] = next_t / divisor
 
-        model = TrainCFR._build_model(maxlen, num_features, target_chars, target_chars_group)
-        checkpoint_name = TrainCFR._create_checkpoints_path(log_name, models_folder)
-        TrainCFR._train_model(model, checkpoint_name, X, y_a, y_t, y_g)
+        for fold in range(folds):
+            model = TrainCFR._build_model(maxlen, num_features, target_chars, target_chars_group)
+            checkpoint_name = TrainCFR._create_checkpoints_path(log_name, models_folder, fold)
+            TrainCFR._train_model(model, checkpoint_name, X, y_a, y_t, y_g)
