@@ -9,11 +9,9 @@ from __future__ import division
 
 import csv
 import os.path
-import sys
 import time
 from Queue import PriorityQueue
 from datetime import datetime, timedelta
-from inspect import getsourcefile
 from itertools import izip
 
 import distance

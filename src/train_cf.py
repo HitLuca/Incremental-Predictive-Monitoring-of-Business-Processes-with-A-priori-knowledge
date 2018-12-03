@@ -24,7 +24,6 @@ from keras.layers import Input, BatchNormalization, LeakyReLU, Dropout
 from keras.layers.core import Dense
 from keras.layers.recurrent import LSTM
 from keras.models import Model
-from keras.optimizers import Nadam
 
 from shared_variables import get_unicode_from_int
 

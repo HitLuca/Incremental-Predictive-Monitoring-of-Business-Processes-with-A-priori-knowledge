@@ -21,7 +21,7 @@ def get_int_from_unicode(unch):
 
 
 def extract_last_model_checkpoint(log_name, models_folder, fold, model_type):
-    model_filepath = base_folderpath + '/' + models_folder + '/' + str(fold) + '/models/' + model_type + '/' + log_name + '/'
+    model_filepath = base_folderpath + models_folder + '/' + str(fold) + '/models/' + model_type + '/' + log_name + '/'
     list_of_files = glob.glob(model_filepath + '*.h5')
     latest_file = max(list_of_files, key=os.path.getctime)
     return latest_file

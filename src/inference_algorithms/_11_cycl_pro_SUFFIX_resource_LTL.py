@@ -173,7 +173,7 @@ def run_experiments(log_name, models_folder, fold):
 
                 queue_next_steps_future = PriorityQueue()
                 start_of_the_cycle_symbol = " "
-                found_sattisfying_constraint = False
+                found_satisfying_constraint = False
 
                 current_beam_size = beam_size
                 current_prediction_premis = None
@@ -185,7 +185,7 @@ def run_experiments(log_name, models_folder, fold):
 
                         _, current_prediction_premis = queue_next_steps.get()
 
-                        if not found_sattisfying_constraint:
+                        if not found_satisfying_constraint:
                             if verify_formula_as_compliant(current_prediction_premis.cropped_line,
                                                            formula,
                                                            prefix_size):
@@ -195,7 +195,7 @@ def run_experiments(log_name, models_folder, fold):
                                 current_prediction_premis.probability_of = 0.0
                                 # overwrite new queue
                                 queue_next_steps_future = PriorityQueue()
-                                found_sattisfying_constraint = True
+                                found_satisfying_constraint = True
 
                         enc = current_prediction_premis.data
                         temp_cropped_line = current_prediction_premis.cropped_line
