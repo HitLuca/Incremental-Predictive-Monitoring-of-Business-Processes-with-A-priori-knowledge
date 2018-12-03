@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+keras = "==2.1.2"
+matplotlib = "*"
+tensorflow-gpu = "==1.4.0"
+distance = "*"
+sklearn = "*"
+py4j = "*"
+h5py = "*"
+unicodecsv = "*"
+plotly = "*"
+jellyfish = "*"
+statistics = "*"
+
+[requires]
+python_version = "2.7"

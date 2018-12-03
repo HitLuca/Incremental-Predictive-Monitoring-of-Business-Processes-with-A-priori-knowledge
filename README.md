@@ -47,9 +47,7 @@ Results are saved into the ```output_files``` folder.
 This project is intended to be self-contained, so no extra files are required.
 
 ### Prerequisites
-Necessary libraries are indicated in the ```requirements.txt```, to install them run
-
-```pip install -r requirements.txt```
+To install the python environment for this project, refer to the [Pipenv setup guide](https://pipenv.readthedocs.io/en/latest/basics/)
 
 ### Running the algorithms
 As the Java server is now integrated in the project, there is no need to start it separately.
@@ -65,3 +63,5 @@ make sure that the ```evaluate_all(log_name)``` line is uncommented and run the 
 #### Elaborating the results
 In order to check improvements between this project and its original implementation, run the  ```parse_results.py``` script.
 
+#### Speeding up the evaluation
+As the evaluation part of the project tends to slow down substantially over time, I included a script that automatically runs a new instance of the ```experiments_runner.py``` script for each log file. To use this feature simply run the ```run_experiments.sh``` script with the log files you want to use selected.

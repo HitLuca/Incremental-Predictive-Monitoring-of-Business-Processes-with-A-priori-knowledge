@@ -11,8 +11,6 @@ from prepare_graph_results import trace3
 from prepare_graph_results import trace4
 from prepare_graph_results import trace5
 
-plotly.__version__
-
 # Edit the layout
 layout = dict(title='BPI13 incidents results',
               xaxis=dict(title='Prefix'),

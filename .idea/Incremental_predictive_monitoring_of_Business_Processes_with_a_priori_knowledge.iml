@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/LTLCheckForTraces" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 2.7.12" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Pipenv (Incremental-Predictive-Monitoring-of-Business-Processes-with-A-priori-knowledge)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

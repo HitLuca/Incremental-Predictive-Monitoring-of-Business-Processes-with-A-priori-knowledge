@@ -108,8 +108,11 @@ class ResultParser:
     @staticmethod
     def _show_comparison_image(populated_table, reference_table):
         indexes_to_keep = [0, 2, 3, 4, 6, 7, 10, 11]
+
         populated_table = populated_table[:, indexes_to_keep]
         reference_table = reference_table[:, indexes_to_keep]
+        print(populated_table)
+        print(reference_table)
 
         improvement_percentage = (1.0 * np.count_nonzero(populated_table > reference_table) / np.count_nonzero(
             populated_table)) * 100.0
@@ -139,41 +142,50 @@ class ResultParser:
         plt.show()
 
     @staticmethod
-    def _load_table(folderpath):
+    def _load_table(folderpath, folds):
         populated_table = np.zeros(
             (len(ResultParser._log_names), len(ResultParser._metrics) * len(ResultParser._model_types) * 2))
 
-        for log_name in ResultParser._log_names:
-            for metric in ResultParser._metrics:
-                for model_type in ResultParser._model_types:
-                    if metric == 'declare' and model_type == 'CF':
-                        continue
-                    filepath = folderpath + metric + '/' + log_name + '_' + model_type + '.csv'
-                    try:
-                        scores = ResultParser._parse_log(filepath, model_type == 'CFR')
-                        ResultParser._populate_table(populated_table, scores, log_name, metric, model_type)
-                    except:
-                        pass
+        for fold in range(folds):
+            fold_table = np.zeros(
+                (len(ResultParser._log_names), len(ResultParser._metrics) * len(ResultParser._model_types) * 2))
+
+            for log_name in ResultParser._log_names:
+                for metric in ResultParser._metrics:
+                    for model_type in ResultParser._model_types:
+                        if metric == 'declare' and model_type == 'CF':
+                            continue
+                        filepath = folderpath + str(
+                            fold) + '/results/' + metric + '/' + log_name + '_' + model_type + '.csv'
+                        try:
+                            scores = ResultParser._parse_log(filepath, model_type == 'CFR')
+                            ResultParser._populate_table(fold_table, scores, log_name, metric, model_type)
+                        except:
+                            pass
+            populated_table += fold_table
+        populated_table /= folds
         return populated_table
 
     @staticmethod
-    def parse_and_compare_with_reference(target_table_folderpath, reference_table_folderpath=None):
+    def parse_and_compare_with_reference(target_table_folderpath, reference_table_folderpath=None, folds=3):
         if reference_table_folderpath is None:
             reference_table = ResultParser._reference_table
         elif reference_table_folderpath == 'zero':
             reference_table = np.zeros(
                 (len(ResultParser._log_names), len(ResultParser._metrics) * len(ResultParser._model_types) * 2))
         else:
-            reference_table = ResultParser._load_table(reference_table_folderpath)
-        target_table = ResultParser._load_table(target_table_folderpath)
+            reference_table = ResultParser._load_table(reference_table_folderpath, folds)
+        target_table = ResultParser._load_table(target_table_folderpath, folds)
 
         ResultParser._show_comparison_image(target_table, reference_table)
         # ResultParser._print_latex_table(populated_table)
 
 
 if __name__ == "__main__":
-    exp_2 = 'output_files/final_experiments_2/results/'
-    original = 'output_files/final_experiments_3/results/'
-    exp_4 = 'output_files/final_experiments_4/results/'
+    exp_2 = 'output_files/final_experiments_2/'
+    original = 'output_files/final_experiments_3/'
+    exp_4 = 'output_files/final_experiments_4/'
 
-    ResultParser.parse_and_compare_with_reference(exp_4, exp_2)
+    exp_5 = 'output_files/final_experiments_5/'
+    folds = 3
+    ResultParser.parse_and_compare_with_reference(exp_5, 'zero', folds)

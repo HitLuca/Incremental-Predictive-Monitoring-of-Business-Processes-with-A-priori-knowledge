@@ -17,7 +17,7 @@ trace0 = go.Scatter(
     y=bpi13_weak_baseline,
     name='Baseline - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4)
 )
 trace1 = go.Scatter(
@@ -25,7 +25,7 @@ trace1 = go.Scatter(
     y=bpi13_weak_no_cycle,
     name='Nocycle - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dash')
 )
@@ -34,7 +34,7 @@ trace2 = go.Scatter(
     y=bpi13_weak_apriori,
     name='Apriori - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dot'
     )  # dash options include 'dash', 'dot', and 'dashdot'
@@ -44,7 +44,7 @@ trace3 = go.Scatter(
     y=bpi13_strong_baseline,
     name='Baseline - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4)
 )
 trace4 = go.Scatter(
@@ -52,7 +52,7 @@ trace4 = go.Scatter(
     y=bpi13_strong_no_cycle,
     name='Nocycle - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dash')
 )
@@ -61,7 +61,7 @@ trace5 = go.Scatter(
     y=bpi13_strong_apriori,
     name='Apriori - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dot')
 )
@@ -81,7 +81,7 @@ trace0_11 = go.Scatter(
     y=bpi11_weak_baseline,
     name='Baseline - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4)
 )
 trace1_11 = go.Scatter(
@@ -89,7 +89,7 @@ trace1_11 = go.Scatter(
     y=bpi11_weak_no_cycle,
     name='Nocycle - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dash')
 )
@@ -98,7 +98,7 @@ trace2_11 = go.Scatter(
     y=bpi11_weak_apriori,
     name='Apriori - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dot'
     )  # dash options include 'dash', 'dot', and 'dashdot'
@@ -108,7 +108,7 @@ trace3_11 = go.Scatter(
     y=bpi11_strong_baseline,
     name='Baseline - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4)
 )
 trace4_11 = go.Scatter(
@@ -116,7 +116,7 @@ trace4_11 = go.Scatter(
     y=bpi11_strong_no_cycle,
     name='Nocycle - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dash')
 )
@@ -125,7 +125,7 @@ trace5_11 = go.Scatter(
     y=bpi11_strong_apriori,
     name='Apriori - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dot')
 )
@@ -144,7 +144,7 @@ trace0_12 = go.Scatter(
     y=bpi12_weak_baseline,
     name='Baseline - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4)
 )
 trace1_12 = go.Scatter(
@@ -152,7 +152,7 @@ trace1_12 = go.Scatter(
     y=bpi12_weak_no_cycle,
     name='Nocycle - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dash')
 )
@@ -161,7 +161,7 @@ trace2_12 = go.Scatter(
     y=bpi12_weak_apriori,
     name='Apriori - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dot'
     )  # dash options include 'dash', 'dot', and 'dashdot'
@@ -171,7 +171,7 @@ trace3_12 = go.Scatter(
     y=bpi12_strong_baseline,
     name='Baseline - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4)
 )
 trace4_12 = go.Scatter(
@@ -179,7 +179,7 @@ trace4_12 = go.Scatter(
     y=bpi12_strong_no_cycle,
     name='Nocycle - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dash')
 )
@@ -188,7 +188,7 @@ trace5_12 = go.Scatter(
     y=bpi12_strong_apriori,
     name='Apriori - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dot')
 )
@@ -207,7 +207,7 @@ trace0_17 = go.Scatter(
     y=bpi17_weak_baseline,
     name='Baseline - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4)
 )
 trace1_17 = go.Scatter(
@@ -215,7 +215,7 @@ trace1_17 = go.Scatter(
     y=bpi17_weak_no_cycle,
     name='Nocycle - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dash')
 )
@@ -224,7 +224,7 @@ trace2_17 = go.Scatter(
     y=bpi17_weak_apriori,
     name='Apriori - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dot'
     )  # dash options include 'dash', 'dot', and 'dashdot'
@@ -234,7 +234,7 @@ trace3_17 = go.Scatter(
     y=bpi17_strong_baseline,
     name='Baseline - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4)
 )
 trace4_17 = go.Scatter(
@@ -242,7 +242,7 @@ trace4_17 = go.Scatter(
     y=bpi17_strong_no_cycle,
     name='Nocycle - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dash')
 )
@@ -251,7 +251,7 @@ trace5_17 = go.Scatter(
     y=bpi17_strong_apriori,
     name='Apriori - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dot')
 )
@@ -270,7 +270,7 @@ trace0_help = go.Scatter(
     y=help_weak_baseline,
     name='Baseline - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4)
 )
 trace1_help = go.Scatter(
@@ -278,7 +278,7 @@ trace1_help = go.Scatter(
     y=help_weak_no_cycle,
     name='Nocycle - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dash')
 )
@@ -287,7 +287,7 @@ trace2_help = go.Scatter(
     y=help_weak_apriori,
     name='Apriori - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dot'
     )  # dash options include 'dash', 'dot', and 'dashdot'
@@ -297,7 +297,7 @@ trace3_help = go.Scatter(
     y=help_strong_baseline,
     name='Baseline - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4)
 )
 trace4_help = go.Scatter(
@@ -305,7 +305,7 @@ trace4_help = go.Scatter(
     y=help_strong_no_cycle,
     name='Nocycle - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dash')
 )
@@ -314,7 +314,7 @@ trace5_help = go.Scatter(
     y=help_strong_apriori,
     name='Apriori - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dot')
 )
@@ -333,7 +333,7 @@ trace0_env = go.Scatter(
     y=env_weak_baseline,
     name='Baseline - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4)
 )
 trace1_env = go.Scatter(
@@ -341,7 +341,7 @@ trace1_env = go.Scatter(
     y=env_weak_no_cycle,
     name='Nocycle - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dash')
 )
@@ -350,7 +350,7 @@ trace2_env = go.Scatter(
     y=env_weak_apriori,
     name='Apriori - weak',
     line=dict(
-        color=('rgb(205, 12, 24)'),
+        color='rgb(205, 12, 24)',
         width=4,
         dash='dot'
     )  # dash options include 'dash', 'dot', and 'dashdot'
@@ -360,7 +360,7 @@ trace3_env = go.Scatter(
     y=env_strong_baseline,
     name='Baseline - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4)
 )
 trace4_env = go.Scatter(
@@ -368,7 +368,7 @@ trace4_env = go.Scatter(
     y=env_strong_no_cycle,
     name='Nocycle - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dash')
 )
@@ -377,7 +377,7 @@ trace5_env = go.Scatter(
     y=env_strong_apriori,
     name='Apriori - strong',
     line=dict(
-        color=('rgb(22, 96, 167)'),
+        color='rgb(22, 96, 167)',
         width=4,
         dash='dot')
 )
