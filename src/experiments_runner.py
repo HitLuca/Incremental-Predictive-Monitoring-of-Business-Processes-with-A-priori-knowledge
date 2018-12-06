@@ -21,7 +21,7 @@ class ExperimentRunner:
         '50x5_3S'
     ]  # , 'BPI2017_50k']
 
-    _models_folder = 'final_experiments_5'
+    _models_folder = 'final_experiments'
 
     def __init__(self):
         pass

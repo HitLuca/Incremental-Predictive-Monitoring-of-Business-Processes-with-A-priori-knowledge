@@ -24,6 +24,7 @@ from keras.layers import Input, BatchNormalization, LeakyReLU, Dropout
 from keras.layers.core import Dense
 from keras.layers.recurrent import LSTM
 from keras.models import Model
+from keras.optimizers import Nadam
 
 from shared_variables import get_unicode_from_int
 
@@ -72,14 +73,14 @@ class TrainCF:
     @staticmethod
     def _train_model(model, checkpoint_name, X, y_a, y_t):
         model_checkpoint = ModelCheckpoint(checkpoint_name, save_best_only=True)
-        lr_reducer = ReduceLROnPlateau(factor=0.5, patience=3, verbose=1)
-        early_stopping = EarlyStopping(monitor='val_loss', patience=6)
+        # lr_reducer = ReduceLROnPlateau(factor=0.5, patience=10, verbose=1)
+        early_stopping = EarlyStopping(monitor='val_loss', patience=5)
 
         model.fit(X, {'act_output': y_a,
                       'time_output': y_t},
                   validation_split=0.2,
                   verbose=2,
-                  callbacks=[early_stopping, model_checkpoint, lr_reducer],
+                  callbacks=[early_stopping, model_checkpoint],
                   epochs=300)
 
     @staticmethod

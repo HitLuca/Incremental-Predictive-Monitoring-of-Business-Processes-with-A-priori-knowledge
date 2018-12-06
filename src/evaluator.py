@@ -4,7 +4,8 @@ from inference_algorithms import \
     _6_evaluate_baseline_SUFFIX_only as baseline_1_cf, \
     _6_evaluate_baseline_SUFFIX_and_group as baseline_1_cfr, \
     _11_cycl_pro_SUFFIX_only as baseline_2_cf, \
-    _11_cycl_pro_SUFFIX_resource_LTL as baseline_2_cfr
+    _11_cycl_pro_SUFFIX_resource_LTL as baseline_2_cfr, \
+    _11_cycl_pro_SUFFIX_declare_smart_queue as new_approach_cfr
 
 
 class Evaluator:
@@ -31,5 +32,5 @@ class Evaluator:
             Evaluator._start_server_and_evaluate(baseline_1_cfr, log_name, models_folder, fold)
             print('baseline_2 CFR')
             Evaluator._start_server_and_evaluate(baseline_2_cfr, log_name, models_folder, fold)
-            # print('new method')
-            # Evaluator._start_server_and_evaluate(new_approach_cfr, log_name, models_folder, fold)
+            print('new method')
+            Evaluator._start_server_and_evaluate(new_approach_cfr, log_name, models_folder, fold)

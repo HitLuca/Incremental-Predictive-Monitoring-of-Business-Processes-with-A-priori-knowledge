@@ -111,8 +111,6 @@ class ResultParser:
 
         populated_table = populated_table[:, indexes_to_keep]
         reference_table = reference_table[:, indexes_to_keep]
-        print(populated_table)
-        print(reference_table)
 
         improvement_percentage = (1.0 * np.count_nonzero(populated_table > reference_table) / np.count_nonzero(
             populated_table)) * 100.0
@@ -133,7 +131,9 @@ class ResultParser:
 
         plt.subplot(1, 2, 2)
         plt.title('comparison (mean:%.2f, sum:%.2f' % (mean_improvement, sum_improvement) + ')')
-        plt.imshow((populated_table - reference_table), vmin=-1, vmax=1,
+        gradient_image = populated_table - reference_table
+        gradient_image[populated_table == 0] = 0
+        plt.imshow(gradient_image, vmin=-1, vmax=1,
                    cmap=plt.cm.seismic)
         plt.yticks(range(len(ResultParser._log_names)), ResultParser._log_names)
         plt.xticks(range(len(ResultParser._headers)), ResultParser._headers, rotation=90)
@@ -143,9 +143,7 @@ class ResultParser:
 
     @staticmethod
     def _load_table(folderpath, folds):
-        populated_table = np.zeros(
-            (len(ResultParser._log_names), len(ResultParser._metrics) * len(ResultParser._model_types) * 2))
-
+        table_folds = []
         for fold in range(folds):
             fold_table = np.zeros(
                 (len(ResultParser._log_names), len(ResultParser._metrics) * len(ResultParser._model_types) * 2))
@@ -162,8 +160,26 @@ class ResultParser:
                             ResultParser._populate_table(fold_table, scores, log_name, metric, model_type)
                         except:
                             pass
-            populated_table += fold_table
-        populated_table /= folds
+            table_folds.append(fold_table)
+        populated_table = np.mean(table_folds, axis=0)
+        return populated_table
+
+    @staticmethod
+    def _load_table_no_folds(folderpath):
+        populated_table = np.zeros(
+            (len(ResultParser._log_names), len(ResultParser._metrics) * len(ResultParser._model_types) * 2))
+
+        for log_name in ResultParser._log_names:
+            for metric in ResultParser._metrics:
+                for model_type in ResultParser._model_types:
+                    if metric == 'declare' and model_type == 'CF':
+                        continue
+                    filepath = folderpath + '/results/' + metric + '/' + log_name + '_' + model_type + '.csv'
+                    try:
+                        scores = ResultParser._parse_log(filepath, model_type == 'CFR')
+                        ResultParser._populate_table(populated_table, scores, log_name, metric, model_type)
+                    except:
+                        pass
         return populated_table
 
     @staticmethod
@@ -178,14 +194,10 @@ class ResultParser:
         target_table = ResultParser._load_table(target_table_folderpath, folds)
 
         ResultParser._show_comparison_image(target_table, reference_table)
-        # ResultParser._print_latex_table(populated_table)
+        ResultParser._print_latex_table(target_table)
 
 
 if __name__ == "__main__":
-    exp_2 = 'output_files/final_experiments_2/'
-    original = 'output_files/final_experiments_3/'
-    exp_4 = 'output_files/final_experiments_4/'
-
-    exp_5 = 'output_files/final_experiments_5/'
+    final_experiments = 'output_files/final_experiments/'
     folds = 3
-    ResultParser.parse_and_compare_with_reference(exp_5, 'zero', folds)
+    ResultParser.parse_and_compare_with_reference(final_experiments, 'zero', folds)

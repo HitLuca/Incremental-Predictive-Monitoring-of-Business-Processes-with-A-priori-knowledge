@@ -82,8 +82,8 @@ class TrainCFR:
         early_stopping = EarlyStopping(monitor='val_loss', patience=5)
 
         model.fit(X, {'act_output': y_a,
-                      'group_output': y_g,
-                      'time_output': y_t},
+                      'time_output': y_t,
+                      'group_output': y_g},
                   validation_split=0.2,
                   verbose=2,
                   callbacks=[early_stopping, model_checkpoint],
