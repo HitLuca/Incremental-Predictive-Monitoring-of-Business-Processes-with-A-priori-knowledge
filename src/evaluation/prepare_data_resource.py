@@ -286,12 +286,12 @@ def amplify(s):
     return 1, " "
 
 
-def create_queue(activites, resources):
+def create_queue(activities, resources):
     queue = PriorityQueue()
     # resources_standardized = standardize_list(activites, resources)
-    for activity_index in range(len(activites)):
+    for activity_index in range(len(activities)):
         for resource_index in range(len(resources)):
-            queue.put((-(np.log(activites[activity_index]) + np.log(resources[resource_index])),
+            queue.put((-(np.log(activities[activity_index])+np.log(resources[resource_index])),
                        [activity_index, resource_index]))
     return queue
 
