@@ -18,7 +18,8 @@ The LTLCheckForTraces.jar program is an artifact generated from the code at [thi
 This contribution aims at improving the existing predictive model only, without improving/developing the existing prediction methods
 
 ### Inference algorithms
-The project is divided into Control Flow (CF) prediction and Control Flow + Resource (CFR) prediction. At the moment, control flow and resource consist of categorical variables
+The project is divided into Control Flow (CF) prediction and Control Flow + Resource (CFR) prediction. At the moment, control flow and resource consist of categorical variables.
+Time has also been added as a prediction element, creating the Control Flow + Resource + Time (CFRT) acronym.
 
 #### Control Flow inference algorithms
 * ```_6_evaluate_baseline_SUFFIX_only``` -> Baseline 1 - no a-priori knowledge is used and only the control-flow is predicted.
