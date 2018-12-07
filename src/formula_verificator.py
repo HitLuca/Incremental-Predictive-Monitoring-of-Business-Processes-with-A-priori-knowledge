@@ -28,27 +28,45 @@ def verify_with_data(model_file, trace_id, activities, groups, times, prefix=0):
     return verificator_app.isTraceWithDataViolated(model_file, trace_id, activities_java, groups_java, times_java)
 
 
-# noinspection PyProtectedMember
-def generate_xlog(traces_id, activities, groups, times):
-    # Convert lists to Java compatible format
-    traces_id_java = ListConverter().convert(traces_id, gateway._gateway_client)
+def verify_with_elapsed_time(model_file, trace_id, activities, groups, elapsed_times, times, prefix=0):
 
-    activities_java = []
-    for activity in activities:
-        activities_java.append(ListConverter().convert(activity, gateway._gateway_client))
-    activities_java = ListConverter().convert(activities_java, gateway._gateway_client)
+    activities_java = gateway.jvm.java.util.ArrayList()
+    groups_java = gateway.jvm.java.util.ArrayList()
+    elapsed_times_java = gateway.jvm.java.util.ArrayList()
+    times_java = gateway.jvm.java.util.ArrayList()
 
-    groups_java = []
-    for group in groups:
-        groups_java.append(ListConverter().convert(group, gateway._gateway_client))
-    groups_java = ListConverter().convert(groups_java, gateway._gateway_client)
+    for i in range(prefix, len(activities)):
+        activities_java.append(str(get_int_from_unicode(activities[i])))
+        groups_java.append(str(get_int_from_unicode(groups[i])))
+        elapsed_times_java.append(str(get_int_from_unicode(elapsed_times[i])))
+        times_java.append(times[i])
+    if not activities_java:
+        return False
 
-    times_java = []
-    for time in times:
-        times_java.append(ListConverter().convert(time, gateway._gateway_client))
-    times_java = ListConverter().convert(times_java, gateway._gateway_client)
+    return verificator_app.isTraceWithElapsedTimeViolated(model_file, trace_id, activities_java, groups_java, elapsed_times_java, times_java)
 
-    verificator_app.generateXLog(traces_id_java, activities_java, groups_java, times_java)
+
+# # noinspection PyProtectedMember
+# def generate_xlog(traces_id, activities, groups, times):
+#     # Convert lists to Java compatible format
+#     traces_id_java = ListConverter().convert(traces_id, gateway._gateway_client)
+#
+#     activities_java = []
+#     for activity in activities:
+#         activities_java.append(ListConverter().convert(activity, gateway._gateway_client))
+#     activities_java = ListConverter().convert(activities_java, gateway._gateway_client)
+#
+#     groups_java = []
+#     for group in groups:
+#         groups_java.append(ListConverter().convert(group, gateway._gateway_client))
+#     groups_java = ListConverter().convert(groups_java, gateway._gateway_client)
+#
+#     times_java = []
+#     for time in times:
+#         times_java.append(ListConverter().convert(time, gateway._gateway_client))
+#     times_java = ListConverter().convert(times_java, gateway._gateway_client)
+#
+#     verificator_app.generateXLog(traces_id_java, activities_java, groups_java, times_java)
 
 
 def test_analysis():
