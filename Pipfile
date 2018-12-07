@@ -8,7 +8,7 @@ verify_ssl = true
 [packages]
 keras = "==2.1.2"
 matplotlib = "*"
-tensorflow-gpu = "==1.4.0"
+tensorflow-gpu = "==1.4.1"
 distance = "*"
 sklearn = "*"
 py4j = "*"
@@ -17,6 +17,7 @@ unicodecsv = "*"
 plotly = "*"
 jellyfish = "*"
 statistics = "*"
+tensorflow = "==1.4.1"
 
 [requires]
 python_version = "2.7"

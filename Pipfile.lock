@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "dcc92588bdc68e9075265272565e0ed599d9fef86bbf267fb0441c2fbbd12979"
+            "sha256": "c09200f33a4dd7d69356d11be0b8b4db422a6a3eba94128973639b86ecd97c00"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -502,18 +502,32 @@
             ],
             "version": "==3.5.3"
         },
-        "tensorflow-gpu": {
+        "tensorflow": {
             "hashes": [
-                "sha256:57cf687f8cebb1d15a35c414e7d75be51c31c2acd9cbf53d237ca8151e04eedc",
-                "sha256:718e640554b0911ad0034d42738cde8f6f820083e5e83ad0fc24ece2db419da7",
-                "sha256:8f1f89ffecd892b70fd1f2e3bc6b8ac79e07d19932f1f763d5b55d5fc1d7090e",
-                "sha256:9ad09ce852d33e8e43268739744a7a92f289e0d1ac09d3689457ebcd43705c40",
-                "sha256:9f9c0125eb7cc259c3f7824b6491bffdcbbdd888950148f7844f9baee19fc66b",
-                "sha256:d834abbad421ccdcf1406c524857bb097852a8899f2d8ab642ff361160011ac6",
-                "sha256:e63d1c9d2a7af5bb46b321f6308c932d8648dab6354e621a664a568d896069ca"
+                "sha256:233d66bfad2287c61434384ec315bbf37b2f551beda2e0d37a8c24a0f2ed3896",
+                "sha256:62e3884a1d7824f20a172ae2861aab50b1802989e85a971f9dfaf61444226856",
+                "sha256:975cbdeb016c3f14ad44f4919260e279918fba08c4bb3d7172ae4bf1aa612292",
+                "sha256:9e6681a4b1e46936dbcc56ac213f61633979f6f348319658431181ffc3c1936c",
+                "sha256:bf51429bc11ab4561b5d124c08a5ee6476519d33b5970338586767563a02adc4",
+                "sha256:c6d798da0002778f38e3b097acd7a620c89ff060fa3823c054113885b2472173",
+                "sha256:cceb8439975ea508ffd19a312d7ff83149ab81d7e8a88685852bbea4ded98736",
+                "sha256:e43641ac5bbfc8a0d37fb8b78657f664856fe83b1ab7acf298f57780e6fbf2de",
+                "sha256:ee96a38a3ba3c53e1cdd8cc2af59d5f378b7992e63c54fba9605c963b209e814",
+                "sha256:f9c03acc5d26ac903e177fb904ceb797632830c5a0fae5c8b49d688a748337db"
             ],
             "index": "pypi",
-            "version": "==1.4.0"
+            "version": "==1.4.1"
+        },
+        "tensorflow-gpu": {
+            "hashes": [
+                "sha256:26d437d858d55ef9ce712f1c4f8d22a353c2aba2d2bdd3ff354d2718fabafeb9",
+                "sha256:3d6994be88e4358e4f7630a032b52ba2191ca9e810aa4902506394bb519bac84",
+                "sha256:713770d7bd676faae9ded02198a41aaf7231633b74bd03ba0d929d52ac85e5e9",
+                "sha256:989232612b97c5fb3e50942a587bcbdcdcac029d47f4cf940f782f36923ceae5",
+                "sha256:f3a169cbf3bb2c54e9b2f7e3803479de49e2024a305fe729bc6553b76a361d31"
+            ],
+            "index": "pypi",
+            "version": "==1.4.1"
         },
         "tensorflow-tensorboard": {
             "hashes": [
