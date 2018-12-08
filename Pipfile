@@ -6,17 +6,13 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-keras = "==2.1.2"
-matplotlib = "*"
-tensorflow-gpu = "==1.4.0"
-distance = "*"
-sklearn = "*"
-py4j = "*"
+keras = "*"
+tensorflow = "*"
 h5py = "*"
-unicodecsv = "*"
+distance = "*"
+scikit-learn = "*"
 plotly = "*"
-jellyfish = "*"
-statistics = "*"
+py4j = "*"
 
 [requires]
 python_version = "2.7"

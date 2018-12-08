@@ -3,7 +3,7 @@
   <component name="PreferredVcsStorage">
     <preferredVcsName>ApexVCS</preferredVcsName>
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Pipenv (Incremental-Predictive-Monitoring-of-Business-Processes-with-A-priori-knowledge)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Pipenv (Incremental_predictive_monitoring_of_Business_Processes_with_a_priori_knowledge)" project-jdk-type="Python SDK" />
   <component name="PyPackaging">
     <option name="earlyReleasesAsUpgrades" value="true" />
   </component>

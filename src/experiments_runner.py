@@ -11,26 +11,26 @@ from train_cfrt import TrainCFRT
 
 class ExperimentRunner:
     _log_names = [
-        '10x5_1S',
-        '10x5_1W',
-        '10x5_3S',
-        '10x5_3W',
-        '5x5_1W',
-        '5x5_1S',
-        '5x5_3W',
-        '5x5_3S',
-        '10x20_1W',
+        # '10x5_1S',
+        # '10x5_1W',
+        # '10x5_3S',
+        # '10x5_3W',
+        # '5x5_1W',
+        # '5x5_1S',
+        # '5x5_3W',
+        # '5x5_3S',
+        # '10x20_1W',
         '10x20_1S',
-        '10x20_3W',
-        '10x20_3S',
-        '10x2_1W',
-        '10x2_1S',
-        '10x2_3W',
-        '10x2_3S',
-        '50x5_1W',
-        '50x5_1S',
-        '50x5_3W',
-        '50x5_3S'
+        # '10x20_3W',
+        # '10x20_3S',
+        # '10x2_1W',
+        # '10x2_1S',
+        # '10x2_3W',
+        # '10x2_3S',
+        # '50x5_1W',
+        # '50x5_1S',
+        # '50x5_3W',
+        # '50x5_3S'
     ]
 
     _models_folder = 'final_experiments'
@@ -59,7 +59,7 @@ class ExperimentRunner:
     @staticmethod
     def run_experiments(input_log_name=None):
         folds = 3
-        use_time = False
+        use_time = True
         config = tf.ConfigProto(intra_op_parallelism_threads=4, inter_op_parallelism_threads=4,
                                 allow_soft_placement=True)
         session = tf.Session(config=config)
@@ -73,7 +73,7 @@ class ExperimentRunner:
 
 
 if __name__ == "__main__":
-    log_name = None
+    log_name = '10x20_1S'
     if len(sys.argv) > 1:
         log_name = sys.argv[1]
     ExperimentRunner.run_experiments(input_log_name=log_name)
