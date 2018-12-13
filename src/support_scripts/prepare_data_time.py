@@ -62,14 +62,15 @@ def prepare_testing_data(eventlog):
 
     difflist = [int(i) for i in difflist]
     maxdiff = max(difflist)
-
+    difflist[np.argmax(difflist)] -= 1e-8
     diff = maxdiff / r
+
     # mediandiff = np.percentile(difflist, 50)
     # diff = mediandiff / r
 
     csvfile.seek(0)
     next(spamreader, None)  # skip the headers
-    row_index = 0
+    line_index = 0
 
     for row in spamreader:
         t = time.strptime(row[2], "%Y-%m-%d %H:%M:%S")
@@ -96,7 +97,7 @@ def prepare_testing_data(eventlog):
             numlines += 1
         line += get_unicode_from_int(row[1])
         line_group += get_unicode_from_int(row[3])
-        line_time += get_unicode_from_int(int(difflist[row_index] / diff))
+        line_time += get_unicode_from_int(int(difflist[line_index] / diff))
         timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(lasteventtime))
         timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(casestarttime))
         timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
@@ -107,7 +108,7 @@ def prepare_testing_data(eventlog):
         times4.append(row[2])
         lasteventtime = t
         first_line = False
-        row_index += 1
+        line_index += 1
     # add last case
     lines.append(line)
     lines_group.append(line_group)
@@ -121,6 +122,8 @@ def prepare_testing_data(eventlog):
     divisor = np.mean([item for sublist in timeseqs for item in sublist])
     divisor2 = np.mean([item for sublist in timeseqs2 for item in sublist])
     divisor3 = np.mean(map(lambda x: np.mean(map(lambda y: x[len(x) - 1] - y, x)), timeseqs2))
+    print(divisor)
+    print(divisor3)
 
     elems_per_fold = int(round(numlines / 3))
 

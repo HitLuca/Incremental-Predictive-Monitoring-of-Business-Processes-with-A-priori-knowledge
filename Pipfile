@@ -13,6 +13,7 @@ distance = "*"
 scikit-learn = "*"
 plotly = "*"
 py4j = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "2.7"

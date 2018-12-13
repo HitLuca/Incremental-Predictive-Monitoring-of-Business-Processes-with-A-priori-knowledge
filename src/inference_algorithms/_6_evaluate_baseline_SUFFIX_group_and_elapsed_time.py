@@ -204,15 +204,15 @@ def run_experiments(log_name, models_folder, fold):
                         one_ahead_gt.append(ground_truth_t)
                         # print('! predicted, end case')
                         break
-                    y_t = y_t * divisor3
+                    y_t = y_t * divisor
                     cropped_times3.append(cropped_times3[-1] + timedelta(seconds=y_t))
                     total_predicted_time = total_predicted_time + y_t
                     predicted += prediction
                     predicted_group += prediction_group
                     predicted_elapsed_time += prediction_elapsed_time
                     predicted_time_string += str(y_t)+" "
-                    if len(pt_array) < len(times[prefix_size:predict_size - 1]):
-                        pt_array.append(y_t)
+                    # if len(pt_array) < len(times[prefix_size:predict_size - 1]):
+                    pt_array.append(y_t)
 
                 output = []
                 if len(ground_truth) > 0:
@@ -223,7 +223,10 @@ def run_experiments(log_name, models_folder, fold):
                     output.append(1 - distance.jaccard(predicted, ground_truth))
                     output.append(ground_truth_t_string)
                     output.append(predicted_time_string)
-                    output.append(sqrt(metrics.mean_squared_error([times[prefix_size:predict_size - 1]], [pt_array])))
+                    #output.append(" ")
+                    #print(times[prefix_size:predict_size - 1])
+                    #print(pt_array[:len(times[prefix_size:predict_size - 1])])
+                    output.append(sqrt(metrics.mean_squared_error([times[prefix_size:predict_size - 1]], [pt_array[:len(times[prefix_size:predict_size - 1])]])))
                     output.append(metrics.mean_absolute_error([ground_truth_t], [total_predicted_time]))
                     output.append(metrics.median_absolute_error([ground_truth_t], [total_predicted_time]))
                     output.append(unicode(ground_truth_group).encode("utf-8"))

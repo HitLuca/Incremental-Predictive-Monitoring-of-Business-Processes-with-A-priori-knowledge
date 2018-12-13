@@ -43,16 +43,16 @@ class TrainCFRT:
         main_input = Input(shape=(max_len, num_features), name='main_input')
         processed = main_input
 
-        processed = Dense(32)(processed)
-        processed = BatchNormalization()(processed)
-        processed = LeakyReLU()(processed)
+        processed = Dense(32, activation = 'selu')(processed)
+        #processed = BatchNormalization()(processed)
+        #processed = LeakyReLU()(processed)
         processed = Dropout(0.5)(processed)
 
-        processed = LSTM(64, return_sequences=False, recurrent_dropout=0.5)(processed)
+        processed = LSTM(64, activation = 'selu', return_sequences=False, recurrent_dropout=0.5)(processed)
 
-        processed = Dense(32)(processed)
-        processed = BatchNormalization()(processed)
-        processed = LeakyReLU()(processed)
+        processed = Dense(32, activation = 'selu')(processed)
+        #processed = BatchNormalization()(processed)
+        #processed = LeakyReLU()(processed)
         processed = Dropout(0.5)(processed)
 
         act_output = Dense(len(target_chars), activation='softmax', name='act_output')(processed)
@@ -65,7 +65,7 @@ class TrainCFRT:
                             'group_output': 'categorical_crossentropy',
                             'elapsed_time_output': 'categorical_crossentropy',
                             'time_output': 'mae'},
-                      # loss_weights=[0.5, 0.5, 0.0],
+                      #loss_weights=[1, 0, 0, 0],
                       optimizer='adam')
         return model
 
@@ -90,7 +90,7 @@ class TrainCFRT:
                   validation_split=0.2,
                   verbose=2,
                   callbacks=[early_stopping, model_checkpoint],
-                  epochs=1)
+                  epochs=50)
 
     @staticmethod
     def train(log_name, models_folder, folds):
@@ -142,8 +142,8 @@ class TrainCFRT:
         # print(mediandiff)
         csvfile.seek(0)
         next(spamreader, None)  # skip the headers
-
         line_index = 0
+
         for row in spamreader:
             t = time.strptime(row[2], "%Y-%m-%d %H:%M:%S")
             if row[0] != lastcase:
@@ -188,9 +188,9 @@ class TrainCFRT:
         timeseqs2.append(times2)
         numlines += 1
 
-        divisor = np.max([item for sublist in timeseqs for item in sublist])
+        divisor = np.mean([item for sublist in timeseqs for item in sublist])
         print('divisor: {}'.format(divisor))
-        divisor2 = np.max([item for sublist in timeseqs2 for item in sublist])
+        divisor2 = np.mean([item for sublist in timeseqs2 for item in sublist])
         print('divisor2: {}'.format(divisor2))
 
         elements_per_fold = int(round(numlines / 3))

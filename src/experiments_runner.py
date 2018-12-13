@@ -42,7 +42,7 @@ class ExperimentRunner:
     def _run_single_experiment(log_name, folds, use_time):
         print(log_name)
         if use_time:
-            TrainCFRT.train(log_name, ExperimentRunner._models_folder, folds)
+            #TrainCFRT.train(log_name, ExperimentRunner._models_folder, folds)
             try:
                 Evaluator.evaluate_time(log_name, ExperimentRunner._models_folder, folds)
             except:
