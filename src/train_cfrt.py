@@ -29,7 +29,7 @@ from keras.layers.core import Dense
 from keras.layers.recurrent import LSTM
 from keras.models import Model
 from keras.optimizers import Nadam
-
+from keras.regularizers import Regularizer
 from shared_variables import get_unicode_from_int
 
 
@@ -44,14 +44,14 @@ class TrainCFRT:
         processed = main_input
 
         processed = Dense(32, activation = 'selu')(processed)
-        #processed = BatchNormalization()(processed)
+        processed = BatchNormalization()(processed)
         #processed = LeakyReLU()(processed)
         processed = Dropout(0.5)(processed)
 
         processed = LSTM(64, activation = 'selu', return_sequences=False, recurrent_dropout=0.5)(processed)
 
         processed = Dense(32, activation = 'selu')(processed)
-        #processed = BatchNormalization()(processed)
+        processed = BatchNormalization()(processed)
         #processed = LeakyReLU()(processed)
         processed = Dropout(0.5)(processed)
 
@@ -61,12 +61,13 @@ class TrainCFRT:
         time_output = Dense(1, activation='sigmoid', name='time_output')(processed)
 
         model = Model(main_input, [act_output, group_output, elapsed_time_output, time_output])
+        opt = Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, schedule_decay=0.004, clipvalue=0.5)
         model.compile(loss={'act_output': 'categorical_crossentropy',
                             'group_output': 'categorical_crossentropy',
                             'elapsed_time_output': 'categorical_crossentropy',
                             'time_output': 'mae'},
                       #loss_weights=[1, 0, 0, 0],
-                      optimizer='adam')
+                      optimizer=opt)
         return model
 
     @staticmethod
@@ -122,11 +123,11 @@ class TrainCFRT:
             if row[0] != lastcase:
                 lastevent = t1
                 lastcase = row[0]
-            if row[1] != '0':
-                t2 = datetime.fromtimestamp(time.mktime(t1)) - datetime.fromtimestamp(time.mktime(lastevent))
-                tdiff = 86400 * t2.days + t2.seconds
-            else:
-                tdiff = 0
+            #if row[1] != '0':
+            t2 = datetime.fromtimestamp(time.mktime(t1)) - datetime.fromtimestamp(time.mktime(lastevent))
+            tdiff = 86400 * t2.days + t2.seconds
+            #else:
+                #tdiff = 0
             difflist.append(tdiff)
             lastevent = t1
 
@@ -401,7 +402,7 @@ class TrainCFRT:
                     if y == sentence_time[t]:
                         X[i, t + leftpad, len(chars) + len(chars_group) + char_indices_time[y]] = 1
                 X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time)] = t + 1
-                X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 1] = sentence_t[t] / divisor
+                X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 1] = sentence_t[t]
                 X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 2] = sentence_t2[t] / divisor2
                 X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 3] = sentence_t3[t] / 86400
                 X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 4] = sentence_t4[t] / 7
@@ -420,7 +421,7 @@ class TrainCFRT:
                     y_y[i, target_char_indices_time[y]] = 1 - softness
                 else:
                     y_y[i, target_char_indices_time[y]] = softness / (len(target_chars_time) - 1)
-            y_t[i] = next_t / divisor
+            y_t[i] = next_t
 
         for fold in range(folds):
             model = TrainCFRT._build_model(maxlen, num_features, target_chars, target_chars_time, target_chars_group)

@@ -87,7 +87,7 @@ def run_experiments(log_name, models_folder, fold):
                 if y == sentence_time[v]:
                     x[0, v+leftpad, len(char_indices)+len(char_indices_group)+char_indices_time[y]] = 1
             x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)] = v+1
-            x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)+1] = times_enc[v]/divisor
+            x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)+1] = times_enc[v]
             x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)+2] = times2_enc[v]/divisor2
             x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)+3] = timesincemidnight.seconds/86400
             x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)+4] = times3_enc[v].weekday()/7
@@ -156,7 +156,9 @@ def run_experiments(log_name, models_folder, fold):
                 cropped_line = ''.join(line[:prefix_size])
                 cropped_line_group = ''.join(line_group[:prefix_size])
                 cropped_line_time = ''.join(line_time[:prefix_size])
+                print(times)
                 cropped_times = times[:prefix_size]
+                print(cropped_times)
                 cropped_times3 = times3[:prefix_size]
                 cropped_times4 = times4[:prefix_size]
                 if len(times2) < prefix_size:
@@ -183,6 +185,11 @@ def run_experiments(log_name, models_folder, fold):
                     y_group = y[1][0]
                     y_time = y[2][0]
                     y_t = y[2][0][0]
+                    # print(y_char)
+                    # print(y_group)
+                    print(y)
+                    print(y_time)
+                    print(y_t)
                     prediction = get_symbol(y_char)  # undo one-hot encoding
                     prediction_group = get_symbol_group(y_group)  # undo one-hot encoding
                     prediction_elapsed_time = get_symbol_time(y_time) # undo one-hot encoding
@@ -204,8 +211,9 @@ def run_experiments(log_name, models_folder, fold):
                         one_ahead_gt.append(ground_truth_t)
                         # print('! predicted, end case')
                         break
-                    y_t = y_t * divisor
+                    y_t = y_t * 1
                     cropped_times3.append(cropped_times3[-1] + timedelta(seconds=y_t))
+                    #cropped_times3.append(cropped_times3[-1] + y_t)
                     total_predicted_time = total_predicted_time + y_t
                     predicted += prediction
                     predicted_group += prediction_group
