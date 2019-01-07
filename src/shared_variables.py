@@ -137,5 +137,10 @@ log_settings = {
         'formula_weak': "<>(\"17\")",
         'prefix_size_pred_from': 6,
         'prefix_size_pred_to': 9
+    },
+    'Hospital_log': {
+        'formula': " []( ( \"7\" -> <>( \"8\" ) ) )  /\ <>\"7\"",
+        'prefix_size_pred_from': 3,
+        'prefix_size_pred_to': 7
     }
 }

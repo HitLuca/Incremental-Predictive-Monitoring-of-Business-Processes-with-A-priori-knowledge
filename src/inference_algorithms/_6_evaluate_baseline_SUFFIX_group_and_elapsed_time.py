@@ -87,7 +87,7 @@ def run_experiments(log_name, models_folder, fold):
                 if y == sentence_time[v]:
                     x[0, v+leftpad, len(char_indices)+len(char_indices_group)+char_indices_time[y]] = 1
             x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)] = v+1
-            x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)+1] = times_enc[v]
+            x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)+1] = times_enc[v]/divisor
             x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)+2] = times2_enc[v]/divisor2
             x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)+3] = timesincemidnight.seconds/86400
             x[0, v+leftpad, len(chars)+len(chars_group)+len(chars_time)+4] = times3_enc[v].weekday()/7
@@ -187,9 +187,9 @@ def run_experiments(log_name, models_folder, fold):
                     y_t = y[2][0][0]
                     # print(y_char)
                     # print(y_group)
-                    print(y)
-                    print(y_time)
-                    print(y_t)
+                    #print(y)
+                    #print(y_time)
+                    #print(y_t)
                     prediction = get_symbol(y_char)  # undo one-hot encoding
                     prediction_group = get_symbol_group(y_group)  # undo one-hot encoding
                     prediction_elapsed_time = get_symbol_time(y_time) # undo one-hot encoding
@@ -211,7 +211,7 @@ def run_experiments(log_name, models_folder, fold):
                         one_ahead_gt.append(ground_truth_t)
                         # print('! predicted, end case')
                         break
-                    y_t = y_t * 1
+                    y_t = y_t * divisor
                     cropped_times3.append(cropped_times3[-1] + timedelta(seconds=y_t))
                     #cropped_times3.append(cropped_times3[-1] + y_t)
                     total_predicted_time = total_predicted_time + y_t
@@ -219,10 +219,12 @@ def run_experiments(log_name, models_folder, fold):
                     predicted_group += prediction_group
                     predicted_elapsed_time += prediction_elapsed_time
                     predicted_time_string += str(y_t)+" "
-                    # if len(pt_array) < len(times[prefix_size:predict_size - 1]):
                     pt_array.append(y_t)
 
+                lp = len(pt_array[:len(times[prefix_size:predict_size])]) #length of predicted times array
+                lt = len(times[prefix_size:lp]) #length of ground truth array, reduced to predicted times one
                 output = []
+
                 if len(ground_truth) > 0:
                     output.append(prefix_size)
                     output.append(unicode(ground_truth).encode("utf-8"))
@@ -232,9 +234,7 @@ def run_experiments(log_name, models_folder, fold):
                     output.append(ground_truth_t_string)
                     output.append(predicted_time_string)
                     #output.append(" ")
-                    #print(times[prefix_size:predict_size - 1])
-                    #print(pt_array[:len(times[prefix_size:predict_size - 1])])
-                    output.append(sqrt(metrics.mean_squared_error([times[prefix_size:predict_size - 1]], [pt_array[:len(times[prefix_size:predict_size - 1])]])))
+                    output.append(sqrt(metrics.mean_squared_error([times[prefix_size:lp]], [pt_array[:lt]])))
                     output.append(metrics.mean_absolute_error([ground_truth_t], [total_predicted_time]))
                     output.append(metrics.median_absolute_error([ground_truth_t], [total_predicted_time]))
                     output.append(unicode(ground_truth_group).encode("utf-8"))

@@ -29,7 +29,6 @@ from keras.layers.core import Dense
 from keras.layers.recurrent import LSTM
 from keras.models import Model
 from keras.optimizers import Nadam
-from keras.regularizers import Regularizer
 from shared_variables import get_unicode_from_int
 
 
@@ -44,14 +43,14 @@ class TrainCFRT:
         processed = main_input
 
         processed = Dense(32, activation = 'selu')(processed)
-        processed = BatchNormalization()(processed)
+        #processed = BatchNormalization()(processed)
         #processed = LeakyReLU()(processed)
         processed = Dropout(0.5)(processed)
 
         processed = LSTM(64, activation = 'selu', return_sequences=False, recurrent_dropout=0.5)(processed)
 
         processed = Dense(32, activation = 'selu')(processed)
-        processed = BatchNormalization()(processed)
+        #processed = BatchNormalization()(processed)
         #processed = LeakyReLU()(processed)
         processed = Dropout(0.5)(processed)
 
@@ -61,7 +60,7 @@ class TrainCFRT:
         time_output = Dense(1, activation='sigmoid', name='time_output')(processed)
 
         model = Model(main_input, [act_output, group_output, elapsed_time_output, time_output])
-        opt = Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, schedule_decay=0.004, clipvalue=0.5)
+        opt = Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, schedule_decay=0.004, clipvalue=3)
         model.compile(loss={'act_output': 'categorical_crossentropy',
                             'group_output': 'categorical_crossentropy',
                             'elapsed_time_output': 'categorical_crossentropy',
@@ -79,19 +78,30 @@ class TrainCFRT:
         return checkpoint_name
 
     @staticmethod
-    def _train_model(model, checkpoint_name, X, y_a, y_t, y_y, y_g):
-        model_checkpoint = ModelCheckpoint(checkpoint_name, save_best_only=True)
-        # lr_reducer = ReduceLROnPlateau(factor=0.5, patience=10, verbose=1)
-        early_stopping = EarlyStopping(monitor='val_loss', patience=5)
+    def _train_model(model, checkpoint_name, X, y_a, y_t, y_g, y_y):
+        model_checkpoint = ModelCheckpoint(checkpoint_name,
+                                           monitor='val_loss',
+                                           verbose=0,
+                                           save_best_only=True,
+                                           save_weights_only=False,
+                                           mode='auto')
+        lr_reducer = ReduceLROnPlateau(monitor='val_loss',
+                                       factor=0.5,
+                                       patience=10,
+                                       verbose=0,
+                                       mode='auto',
+                                       cooldown=0,
+                                       min_lr=0)
+        early_stopping = EarlyStopping(monitor='val_loss', patience=42)
 
         model.fit(X, {'act_output': y_a,
                       'time_output': y_t,
-                      'elapsed_time_output': y_y,
-                      'group_output': y_g},
+                      'group_output': y_g,
+                      'elapsed_time_output': y_y},
                   validation_split=0.2,
                   verbose=2,
-                  callbacks=[early_stopping, model_checkpoint],
-                  epochs=50)
+                  callbacks=[early_stopping, model_checkpoint, lr_reducer],
+                  epochs=30)
 
     @staticmethod
     def train(log_name, models_folder, folds):
@@ -402,7 +412,7 @@ class TrainCFRT:
                     if y == sentence_time[t]:
                         X[i, t + leftpad, len(chars) + len(chars_group) + char_indices_time[y]] = 1
                 X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time)] = t + 1
-                X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 1] = sentence_t[t]
+                X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 1] = sentence_t[t] / divisor
                 X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 2] = sentence_t2[t] / divisor2
                 X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 3] = sentence_t3[t] / 86400
                 X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 4] = sentence_t4[t] / 7
@@ -421,9 +431,9 @@ class TrainCFRT:
                     y_y[i, target_char_indices_time[y]] = 1 - softness
                 else:
                     y_y[i, target_char_indices_time[y]] = softness / (len(target_chars_time) - 1)
-            y_t[i] = next_t
+            y_t[i] = next_t / divisor
 
         for fold in range(folds):
             model = TrainCFRT._build_model(maxlen, num_features, target_chars, target_chars_time, target_chars_group)
             checkpoint_name = TrainCFRT._create_checkpoints_path(log_name, models_folder, fold)
-            TrainCFRT._train_model(model, checkpoint_name, X, y_a, y_t, y_y, y_g)
+            TrainCFRT._train_model(model, checkpoint_name, X, y_a, y_t, y_g, y_y)

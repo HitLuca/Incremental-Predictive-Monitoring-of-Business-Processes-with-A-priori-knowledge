@@ -121,7 +121,7 @@ def prepare_testing_data(eventlog):
 
     divisor = np.mean([item for sublist in timeseqs for item in sublist])
     divisor2 = np.mean([item for sublist in timeseqs2 for item in sublist])
-    divisor3 = np.mean(map(lambda x: np.mean(map(lambda y: x[len(x) - 1] - y, x)), timeseqs))
+    divisor3 = np.mean(map(lambda x: np.mean(map(lambda y: x[len(x) - 1] - y, x)), timeseqs2))
     print(divisor)
     print(divisor3)
 
@@ -299,7 +299,7 @@ def encode(sentence, sentence_group, sentence_time, times, times3, maxlen, chars
             if y == sentence_time[t]:
                 x[0, t + leftpad, len(char_indices) + len(char_indices_group) + char_indices_time[y]] = 1
         x[0, t + leftpad, len(chars) + len(chars_group) + len(chars_time)] = t + 1
-        x[0, t + leftpad, len(chars) + len(chars_group) + len(chars_time) + 1] = times[t]
+        x[0, t + leftpad, len(chars) + len(chars_group) + len(chars_time) + 1] = times[t] / divisor
         x[0, t + leftpad, len(chars) + len(chars_group) + len(chars_time) + 2] = times2[t] / divisor2
         x[0, t + leftpad, len(chars) + len(chars_group) + len(chars_time) + 3] = timesincemidnight.seconds / 86400
         x[0, t + leftpad, len(chars) + len(chars_group) + len(chars_time) + 4] = times3[t].weekday() / 7

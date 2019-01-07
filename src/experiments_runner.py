@@ -20,7 +20,7 @@ class ExperimentRunner:
         # '5x5_3W',
         # '5x5_3S',
         # '10x20_1W',
-        #'10x20_1S',
+        # '10x20_1S',
         # '10x20_3W',
         # '10x20_3S',
         # '10x2_1W',
@@ -29,7 +29,7 @@ class ExperimentRunner:
         # '10x2_3S',
         # '50x5_1W',
         # '50x5_1S',
-        # '50x5_3W',
+        #'50x5_3W',
         # '50x5_3S',
         'Hospital_log'
     ]
@@ -43,7 +43,7 @@ class ExperimentRunner:
     def _run_single_experiment(log_name, folds, use_time):
         print(log_name)
         if use_time:
-            TrainCFRT.train(log_name, ExperimentRunner._models_folder, folds)
+            #TrainCFRT.train(log_name, ExperimentRunner._models_folder, folds)
             try:
                 Evaluator.evaluate_time(log_name, ExperimentRunner._models_folder, folds)
             except:
