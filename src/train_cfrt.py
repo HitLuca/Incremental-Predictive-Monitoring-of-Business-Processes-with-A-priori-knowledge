@@ -60,7 +60,7 @@ class TrainCFRT:
         time_output = Dense(1, activation='sigmoid', name='time_output')(processed)
 
         model = Model(main_input, [act_output, group_output, elapsed_time_output, time_output])
-        opt = Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, schedule_decay=0.004, clipvalue=3)
+        opt = Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, schedule_decay=0.004, clipvalue=1)
         model.compile(loss={'act_output': 'categorical_crossentropy',
                             'group_output': 'categorical_crossentropy',
                             'elapsed_time_output': 'categorical_crossentropy',
@@ -101,7 +101,7 @@ class TrainCFRT:
                   validation_split=0.2,
                   verbose=2,
                   callbacks=[early_stopping, model_checkpoint, lr_reducer],
-                  epochs=30)
+                  epochs=10)
 
     @staticmethod
     def train(log_name, models_folder, folds):
@@ -144,10 +144,12 @@ class TrainCFRT:
         difflist = [int(i) for i in difflist]
         maxdiff = max(difflist)
         difflist[np.argmax(difflist)] -= 1e-8
-        diff = maxdiff / r
-        # difflist.sort()
-        # mediandiff = np.percentile(difflist, 50)
-        # diff = mediandiff / r
+        #diff = maxdiff / r
+        difflist.sort()
+        r1 = np.percentile(difflist, 20)
+        r2 = np.percentile(difflist, 40)
+        r3 = np.percentile(difflist, 60)
+        r4 = np.percentile(difflist, 80)
 
         # print(maxdiff)
         # print(mediandiff)
@@ -179,7 +181,17 @@ class TrainCFRT:
             # if (difflist[line_index] / diff) <= r:
             #     line_time += get_unicode_from_int(int(int(row[4]) / diff))
             # else:
-            line_time += get_unicode_from_int(int(difflist[line_index] / diff))
+            #line_time += get_unicode_from_int(int(difflist[line_index] / diff))
+            if difflist[line_index] <= r1:
+                line_time += get_unicode_from_int(0)
+            if r1 < difflist[line_index] < r2:
+                line_time += get_unicode_from_int(1)
+            if r2 < difflist[line_index] < r3:
+                line_time += get_unicode_from_int(2)
+            if r3 < difflist[line_index] < r4:
+                line_time += get_unicode_from_int(3)
+            else:
+                line_time += get_unicode_from_int(4)
             timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(
                 time.mktime(lasteventtime))
             timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(
@@ -297,7 +309,17 @@ class TrainCFRT:
                 numlines += 1
             line += get_unicode_from_int(row[1])
             line_group += get_unicode_from_int(row[3])
-            line_time += get_unicode_from_int(int(difflist[line_index] / diff))
+            #line_time += get_unicode_from_int(int(difflist[line_index] / diff))
+            if difflist[line_index] <= r1:
+                line_time += get_unicode_from_int(0)
+            if r1 < difflist[line_index] < r2:
+                line_time += get_unicode_from_int(1)
+            if r2 < difflist[line_index] < r3:
+                line_time += get_unicode_from_int(2)
+            if r3 < difflist[line_index] < r4:
+                line_time += get_unicode_from_int(3)
+            else:
+                line_time += get_unicode_from_int(4)
             timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(
                 time.mktime(lasteventtime))
             timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(

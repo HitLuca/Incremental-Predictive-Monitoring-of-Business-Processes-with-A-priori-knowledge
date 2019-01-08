@@ -11,27 +11,27 @@ from train_cfrt import TrainCFRT
 
 class ExperimentRunner:
     _log_names = [
-        # '10x5_1S',
-        # '10x5_1W',
+        '10x5_1S',
+        '10x5_1W',
         # '10x5_3S',
         # '10x5_3W',
-        # '5x5_1W',
-        # '5x5_1S',
+        '5x5_1W',
+        '5x5_1S',
         # '5x5_3W',
         # '5x5_3S',
         # '10x20_1W',
-        # '10x20_1S',
-        # '10x20_3W',
+        '10x20_1S',
+        '10x20_3W',
         # '10x20_3S',
-        # '10x2_1W',
-        # '10x2_1S',
+        '10x2_1W',
+        '10x2_1S',
         # '10x2_3W',
         # '10x2_3S',
-        # '50x5_1W',
+        '50x5_1W',
         # '50x5_1S',
-        #'50x5_3W',
+        # '50x5_3W',
         # '50x5_3S',
-        'Hospital_log'
+        #'Hospital_log'
     ]
 
     _models_folder = 'final_experiments'
@@ -43,7 +43,7 @@ class ExperimentRunner:
     def _run_single_experiment(log_name, folds, use_time):
         print(log_name)
         if use_time:
-            #TrainCFRT.train(log_name, ExperimentRunner._models_folder, folds)
+            TrainCFRT.train(log_name, ExperimentRunner._models_folder, folds)
             try:
                 Evaluator.evaluate_time(log_name, ExperimentRunner._models_folder, folds)
             except:
@@ -74,7 +74,7 @@ class ExperimentRunner:
 
 
 if __name__ == "__main__":
-    log_name = 'Hospital_log'
+    log_name = ''
     if len(sys.argv) > 1:
         log_name = sys.argv[1]
-    ExperimentRunner.run_experiments(input_log_name=log_name)
+    ExperimentRunner.run_experiments(input_log_name=None)

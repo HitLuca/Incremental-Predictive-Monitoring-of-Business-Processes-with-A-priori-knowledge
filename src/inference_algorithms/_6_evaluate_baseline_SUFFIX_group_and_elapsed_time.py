@@ -221,8 +221,8 @@ def run_experiments(log_name, models_folder, fold):
                     predicted_time_string += str(y_t)+" "
                     pt_array.append(y_t)
 
-                lp = len(pt_array[:len(times[prefix_size:predict_size])]) #length of predicted times array
-                lt = len(times[prefix_size:lp]) #length of ground truth array, reduced to predicted times one
+                lp = len(pt_array) #length of predicted times array
+                lt = len(times[prefix_size:prefix_size+lp]) #length of ground truth array, reduced to predicted times one
                 output = []
 
                 if len(ground_truth) > 0:
@@ -234,7 +234,12 @@ def run_experiments(log_name, models_folder, fold):
                     output.append(ground_truth_t_string)
                     output.append(predicted_time_string)
                     #output.append(" ")
-                    output.append(sqrt(metrics.mean_squared_error([times[prefix_size:lp]], [pt_array[:lt]])))
+                    print('lt ', lt)
+                    print('lp ', lp)
+                    print([times[prefix_size:prefix_size+lp]])
+                    print([pt_array[:lt]])
+                    print(pt_array)
+                    output.append(sqrt(metrics.mean_squared_error([times[prefix_size:prefix_size+lp]], [pt_array[:lt]])))
                     output.append(metrics.mean_absolute_error([ground_truth_t], [total_predicted_time]))
                     output.append(metrics.median_absolute_error([ground_truth_t], [total_predicted_time]))
                     output.append(unicode(ground_truth_group).encode("utf-8"))

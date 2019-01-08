@@ -63,10 +63,12 @@ def prepare_testing_data(eventlog):
     difflist = [int(i) for i in difflist]
     maxdiff = max(difflist)
     difflist[np.argmax(difflist)] -= 1e-8
-    diff = maxdiff / r
-
-    # mediandiff = np.percentile(difflist, 50)
-    # diff = mediandiff / r
+    # diff = maxdiff / r
+    difflist.sort()
+    r1 = np.percentile(difflist, 20)
+    r2 = np.percentile(difflist, 40)
+    r3 = np.percentile(difflist, 60)
+    r4 = np.percentile(difflist, 80)
 
     csvfile.seek(0)
     next(spamreader, None)  # skip the headers
@@ -97,7 +99,17 @@ def prepare_testing_data(eventlog):
             numlines += 1
         line += get_unicode_from_int(row[1])
         line_group += get_unicode_from_int(row[3])
-        line_time += get_unicode_from_int(int(difflist[line_index] / diff))
+        #line_time += get_unicode_from_int(int(difflist[line_index] / diff))
+        if difflist[line_index] <= r1:
+            line_time += get_unicode_from_int(0)
+        if r1 < difflist[line_index] < r2:
+            line_time += get_unicode_from_int(1)
+        if r2 < difflist[line_index] < r3:
+            line_time += get_unicode_from_int(2)
+        if r3 < difflist[line_index] < r4:
+            line_time += get_unicode_from_int(3)
+        else:
+            line_time += get_unicode_from_int(4)
         timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(lasteventtime))
         timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(casestarttime))
         timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
