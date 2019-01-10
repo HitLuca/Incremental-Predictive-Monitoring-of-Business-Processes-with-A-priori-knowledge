@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 source ~/.bashrc
 
 python_env
@@ -28,6 +29,6 @@ log_names=(
 
 for log_name in "${log_names[@]}"
 do
-    python experiments_runner.py ${log_name}
+    python experiments_runner.py ${log_name} 1
 done
 

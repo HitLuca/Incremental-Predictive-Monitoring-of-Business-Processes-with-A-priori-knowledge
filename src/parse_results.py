@@ -3,6 +3,8 @@ import csv
 import numpy as np
 from matplotlib import pyplot as plt
 
+from shared_variables import folds
+
 
 class ResultParser:
     _log_names = ['10x2_1W', '10x2_3W', '10x2_1S', '10x2_3S', '10x5_1W', '10x5_3W', '10x5_1S', '10x5_3S', '10x20_1W',
@@ -183,10 +185,10 @@ class ResultParser:
         return populated_table
 
     @staticmethod
-    def parse_and_compare_with_reference(target_table_folderpath, reference_table_folderpath=None, folds=3):
-        if reference_table_folderpath is None:
+    def parse_and_compare_with_reference(target_table_folderpath, reference_table_folderpath=None):
+        if reference_table_folderpath == 'reference':
             reference_table = ResultParser._reference_table
-        elif reference_table_folderpath == 'zero':
+        elif reference_table_folderpath == 'zeros':
             reference_table = np.zeros(
                 (len(ResultParser._log_names), len(ResultParser._metrics) * len(ResultParser._model_types) * 2))
         else:

@@ -7,6 +7,7 @@ from inference_algorithms import \
     _11_cycl_pro_SUFFIX_only as baseline_2_cf, \
     _11_cycl_pro_SUFFIX_resource_LTL as baseline_2_cfr, \
     _11_cycl_pro_SUFFIX_declare_smart_queue as new_approach_cfr
+from shared_variables import folds
 
 
 class Evaluator:
@@ -23,7 +24,7 @@ class Evaluator:
         p.wait()
 
     @staticmethod
-    def evaluate_all(log_name, models_folder, folds):
+    def evaluate_all(log_name, models_folder):
         for fold in range(folds):
             print('baseline_1 CF')
             Evaluator._start_server_and_evaluate(baseline_1_cf, log_name, models_folder, fold)
@@ -37,7 +38,7 @@ class Evaluator:
             Evaluator._start_server_and_evaluate(new_approach_cfr, log_name, models_folder, fold)
 
     @staticmethod
-    def evaluate_time(log_name, models_folder, folds):
+    def evaluate_time(log_name, models_folder):
         for fold in range(folds):
             print('baseline_1 CFRT')
             Evaluator._start_server_and_evaluate(baseline_1_cfrt, log_name, models_folder, fold)

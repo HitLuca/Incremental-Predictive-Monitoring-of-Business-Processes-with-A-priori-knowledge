@@ -28,9 +28,9 @@ from keras.layers import Input, Dropout, BatchNormalization, LeakyReLU
 from keras.layers.core import Dense
 from keras.layers.recurrent import LSTM
 from keras.models import Model
-from keras.optimizers import Nadam
+from keras.optimizers import Nadam, Adam
 
-from shared_variables import get_unicode_from_int
+from shared_variables import get_unicode_from_int, epochs, folds, validation_split
 
 
 class TrainCFR:
@@ -38,33 +38,55 @@ class TrainCFR:
         pass
 
     @staticmethod
-    def _build_model(max_len, num_features, target_chars, target_chars_group):
+    def _build_model(max_len, num_features, target_chars, target_chars_group, use_old_model):
         print('Build model...')
+
         main_input = Input(shape=(max_len, num_features), name='main_input')
         processed = main_input
 
-        processed = Dense(32)(processed)
-        processed = BatchNormalization()(processed)
-        processed = LeakyReLU()(processed)
-        processed = Dropout(0.5)(processed)
+        if use_old_model:
+            processed = LSTM(100, return_sequences=True, dropout=0.2)(processed)
+            processed = BatchNormalization()(processed)
 
-        processed = LSTM(64, return_sequences=False, recurrent_dropout=0.5)(processed)
+            activity_output = LSTM(100, return_sequences=False, dropout=0.2)(processed)
+            activity_output = BatchNormalization()(activity_output)
 
-        processed = Dense(32)(processed)
-        processed = BatchNormalization()(processed)
-        processed = LeakyReLU()(processed)
-        processed = Dropout(0.5)(processed)
+            group_output = LSTM(100, return_sequences=False, dropout=0.2)(processed)
+            group_output = BatchNormalization()(group_output)
 
-        act_output = Dense(len(target_chars), activation='softmax', name='act_output')(processed)
-        group_output = Dense(len(target_chars_group), activation='softmax', name='group_output')(processed)
-        time_output = Dense(1, activation='sigmoid', name='time_output')(processed)
+            time_output = LSTM(100, return_sequences=False, dropout=0.2)(processed)
+            time_output = BatchNormalization()(time_output)
 
-        model = Model(main_input, [act_output, group_output, time_output])
+            activity_output = Dense(len(target_chars), activation='softmax', name='act_output')(activity_output)
+            group_output = Dense(len(target_chars_group), activation='softmax', name='group_output')(group_output)
+            time_output = Dense(1, name='time_output')(time_output)
+
+            opt = Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, schedule_decay=0.004, clipvalue=3)
+        else:
+            processed = Dense(32)(processed)
+            processed = BatchNormalization()(processed)
+            processed = LeakyReLU()(processed)
+            processed = Dropout(0.5)(processed)
+
+            processed = LSTM(64, return_sequences=False, recurrent_dropout=0.5)(processed)
+
+            processed = Dense(32)(processed)
+            processed = BatchNormalization()(processed)
+            processed = LeakyReLU()(processed)
+            processed = Dropout(0.5)(processed)
+
+            activity_output = Dense(len(target_chars), activation='softmax', name='act_output')(processed)
+            group_output = Dense(len(target_chars_group), activation='softmax', name='group_output')(processed)
+            time_output = Dense(1, activation='sigmoid', name='time_output')(processed)
+
+            opt = Adam()
+
+        model = Model(main_input, [activity_output, group_output, time_output])
         model.compile(loss={'act_output': 'categorical_crossentropy',
                             'group_output': 'categorical_crossentropy',
                             'time_output': 'mae'},
-                      loss_weights=[0.5, 0.5, 0.0],
-                      optimizer='adam')
+                      loss_weights=[0.5, 0.5, 0],
+                      optimizer=opt)
         return model
 
     @staticmethod
@@ -84,13 +106,13 @@ class TrainCFR:
         model.fit(X, {'act_output': y_a,
                       'time_output': y_t,
                       'group_output': y_g},
-                  validation_split=0.2,
+                  validation_split=validation_split,
                   verbose=2,
                   callbacks=[early_stopping, model_checkpoint],
-                  epochs=300)
+                  epochs=epochs)
 
     @staticmethod
-    def train(log_name, models_folder, folds):
+    def train(log_name, models_folder, use_old_model):
         lines = []
         lines_group = []
         timeseqs = []
@@ -342,6 +364,6 @@ class TrainCFR:
             y_t[i] = next_t / divisor
 
         for fold in range(folds):
-            model = TrainCFR._build_model(maxlen, num_features, target_chars, target_chars_group)
+            model = TrainCFR._build_model(maxlen, num_features, target_chars, target_chars_group, use_old_model)
             checkpoint_name = TrainCFR._create_checkpoints_path(log_name, models_folder, fold)
             TrainCFR._train_model(model, checkpoint_name, X, y_a, y_t, y_g)

@@ -30,7 +30,7 @@ from keras.layers.recurrent import LSTM
 from keras.models import Model
 from keras.optimizers import Nadam
 
-from shared_variables import get_unicode_from_int
+from shared_variables import get_unicode_from_int, epochs, validation_split, folds
 
 
 class TrainCFRT:
@@ -38,7 +38,7 @@ class TrainCFRT:
         pass
 
     @staticmethod
-    def _build_model(max_len, num_features, target_chars, target_chars_time, target_chars_group):
+    def _build_model(max_len, num_features, target_chars, target_chars_time, target_chars_group, use_old_model):
         print('Build model...')
         main_input = Input(shape=(max_len, num_features), name='main_input')
         processed = main_input
@@ -87,13 +87,13 @@ class TrainCFRT:
                       'time_output': y_t,
                       'elapsed_time_output': y_y,
                       'group_output': y_g},
-                  validation_split=0.2,
+                  validation_split=validation_split,
                   verbose=2,
                   callbacks=[early_stopping, model_checkpoint],
-                  epochs=1)
+                  epochs=epochs)
 
     @staticmethod
-    def train(log_name, models_folder, folds):
+    def train(log_name, models_folder, use_old_model):
         lines = []
         lines_group = []
         lines_time = []
@@ -423,6 +423,6 @@ class TrainCFRT:
             y_t[i] = next_t / divisor
 
         for fold in range(folds):
-            model = TrainCFRT._build_model(maxlen, num_features, target_chars, target_chars_time, target_chars_group)
+            model = TrainCFRT._build_model(maxlen, num_features, target_chars, target_chars_time, target_chars_group, use_old_model)
             checkpoint_name = TrainCFRT._create_checkpoints_path(log_name, models_folder, fold)
             TrainCFRT._train_model(model, checkpoint_name, X, y_a, y_t, y_y, y_g)

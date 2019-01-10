@@ -10,6 +10,9 @@ import os
 ascii_offset = 161
 beam_size = 3
 base_folderpath = 'output_files/'
+epochs = 300
+folds = 3
+validation_split = 0.2
 
 
 def get_unicode_from_int(ch):

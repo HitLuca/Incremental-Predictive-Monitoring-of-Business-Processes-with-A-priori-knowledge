@@ -24,9 +24,9 @@ from keras.layers import Input, BatchNormalization, LeakyReLU, Dropout
 from keras.layers.core import Dense
 from keras.layers.recurrent import LSTM
 from keras.models import Model
-from keras.optimizers import Nadam
+from keras.optimizers import Nadam, Adam
 
-from shared_variables import get_unicode_from_int
+from shared_variables import get_unicode_from_int, folds, epochs, validation_split
 
 
 class TrainCF:
@@ -34,32 +34,50 @@ class TrainCF:
         pass
 
     @staticmethod
-    def _build_model(max_len, num_features, target_chars):
+    def _build_model(max_len, num_features, target_chars, use_old_model):
         print('Build model...')
+
         main_input = Input(shape=(max_len, num_features), name='main_input')
         processed = main_input
 
-        processed = Dense(32)(processed)
-        processed = BatchNormalization()(processed)
-        processed = LeakyReLU()(processed)
-        processed = Dropout(0.5)(processed)
+        if use_old_model:
+            processed = LSTM(100, return_sequences=True, dropout=0.2)(processed)
+            processed = BatchNormalization()(processed)
 
-        processed = LSTM(64, return_sequences=False, recurrent_dropout=0.5)(processed)
+            activity_output = LSTM(100, return_sequences=False, dropout=0.2)(processed)
+            activity_output = BatchNormalization()(activity_output)
 
-        processed = Dense(32)(processed)
-        processed = BatchNormalization()(processed)
-        processed = LeakyReLU()(processed)
-        processed = Dropout(0.5)(processed)
+            time_output = LSTM(100, return_sequences=False, dropout=0.2)(processed)
+            time_output = BatchNormalization()(time_output)
 
-        act_output = Dense(len(target_chars), activation='softmax', name='act_output')(processed)
-        time_output = Dense(1, activation='sigmoid', name='time_output')(processed)
+            activity_output = Dense(len(target_chars), activation='softmax', name='act_output')(activity_output)
+            time_output = Dense(1, name='time_output')(time_output)
 
-        model = Model(main_input, [act_output, time_output])
+            opt = Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=1e-08, schedule_decay=0.004, clipvalue=3)
+        else:
+            processed = Dense(32)(processed)
+            processed = BatchNormalization()(processed)
+            processed = LeakyReLU()(processed)
+            processed = Dropout(0.5)(processed)
+
+            processed = LSTM(64, return_sequences=False, recurrent_dropout=0.5)(processed)
+
+            processed = Dense(32)(processed)
+            processed = BatchNormalization()(processed)
+            processed = LeakyReLU()(processed)
+            processed = Dropout(0.5)(processed)
+
+            activity_output = Dense(len(target_chars), activation='softmax', name='act_output')(processed)
+            time_output = Dense(1, activation='sigmoid', name='time_output')(processed)
+
+            opt = Adam()
+
+        model = Model(main_input, [activity_output, time_output])
 
         model.compile(loss={'act_output': 'categorical_crossentropy',
-                            'time_output': 'mse'},
+                            'time_output': 'mae'},
                       loss_weights=[1.0, 0.0],
-                      optimizer='adam')
+                      optimizer=opt)
         return model
 
     @staticmethod
@@ -73,15 +91,14 @@ class TrainCF:
     @staticmethod
     def _train_model(model, checkpoint_name, X, y_a, y_t):
         model_checkpoint = ModelCheckpoint(checkpoint_name, save_best_only=True)
-        # lr_reducer = ReduceLROnPlateau(factor=0.5, patience=10, verbose=1)
         early_stopping = EarlyStopping(monitor='val_loss', patience=5)
-
+        lr_reducer = ReduceLROnPlateau(factor=0.5)
         model.fit(X, {'act_output': y_a,
                       'time_output': y_t},
-                  validation_split=0.2,
+                  validation_split=validation_split,
                   verbose=2,
-                  callbacks=[early_stopping, model_checkpoint],
-                  epochs=300)
+                  callbacks=[early_stopping, model_checkpoint, lr_reducer],
+                  epochs=epochs)
 
     @staticmethod
     def _load_dataset(log_name):
@@ -119,9 +136,9 @@ class TrainCF:
                 (activity_id, time_since_case_start, time_since_last_event, time_since_midnight, day_of_week))
 
         print(len(dataset))
-        
+
     @staticmethod
-    def train(log_name, models_folder, folds):
+    def train(log_name, models_folder, use_old_model):
         # TrainCF._load_dataset(log_name)
 
         lines = []  # list of all the activity sequences
@@ -348,6 +365,6 @@ class TrainCF:
 
         for fold in range(folds):
             # model = build_model(max_length, num_features, max_activity_id)
-            model = TrainCF._build_model(maxlen, num_features, target_chars)
+            model = TrainCF._build_model(maxlen, num_features, target_chars, use_old_model)
             checkpoint_name = TrainCF._create_checkpoints_path(log_name, models_folder, fold)
             TrainCF._train_model(model, checkpoint_name, X, y_a, y_t)
