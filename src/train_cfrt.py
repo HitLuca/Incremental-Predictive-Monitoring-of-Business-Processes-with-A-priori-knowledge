@@ -318,8 +318,8 @@ class TrainCFRT:
         elements_per_fold = int(round(numlines / 3))
 
         lines = lines[:-elements_per_fold]
-        lines_group = lines_group[:elements_per_fold]
-        lines_time = lines_time[:elements_per_fold]
+        lines_group = lines_group[:-elements_per_fold]
+        lines_time = lines_time[:-elements_per_fold]
         lines_t = timeseqs[:-elements_per_fold]
         lines_t2 = timeseqs2[:-elements_per_fold]
         lines_t3 = timeseqs3[:-elements_per_fold]
@@ -342,9 +342,6 @@ class TrainCFRT:
         sentences_t3 = []
         sentences_t4 = []
         next_chars_t = []
-        next_chars_t2 = []
-        next_chars_t3 = []
-        next_chars_t4 = []
         for line, line_group, line_time, line_t, line_t2, line_t3, line_t4 in izip(lines, lines_group, lines_time, lines_t, lines_t2, lines_t3,
                                                                         lines_t4):
             for i in range(0, len(line), step):
@@ -362,14 +359,8 @@ class TrainCFRT:
                 next_chars_time.append(line_time[i])
                 if i == len(line) - 1:  # special case to deal time of end character
                     next_chars_t.append(0)
-                    next_chars_t2.append(0)
-                    next_chars_t3.append(0)
-                    next_chars_t4.append(0)
                 else:
                     next_chars_t.append(line_t[i])
-                    next_chars_t2.append(line_t2[i])
-                    next_chars_t3.append(line_t3[i])
-                    next_chars_t4.append(line_t4[i])
         print('nb sequences:', len(sentences))
 
         print('Vectorization...')

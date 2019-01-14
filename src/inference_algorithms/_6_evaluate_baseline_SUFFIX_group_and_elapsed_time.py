@@ -182,7 +182,7 @@ def run_experiments(log_name, models_folder, fold):
                     y_char = y[0][0]
                     y_group = y[1][0]
                     y_time = y[2][0]
-                    y_t = y[2][0][0]
+                    y_t = y[3][0][0]
                     prediction = get_symbol(y_char)  # undo one-hot encoding
                     prediction_group = get_symbol_group(y_group)  # undo one-hot encoding
                     prediction_elapsed_time = get_symbol_time(y_time) # undo one-hot encoding

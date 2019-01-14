@@ -214,7 +214,7 @@ pip-selfcheck.json
 
 # End of https://www.gitignore.io/api/python,pycharm
 
-src/experiments_backup/
+src/backups/
 src/output_files/
 
 .idea/deployment.xml

@@ -306,9 +306,6 @@ class TrainCF:
         sentences_t3 = []
         sentences_t4 = []
         next_chars_t = []
-        next_chars_t2 = []
-        next_chars_t3 = []
-        next_chars_t4 = []
         for line, line_t, line_t2, line_t3, line_t4 in izip(lines, lines_t, lines_t2, lines_t3, lines_t4):
             for i in range(0, len(line), step):
                 if i == 0:
@@ -323,16 +320,9 @@ class TrainCF:
                 next_chars.append(line[i])
                 if i == len(line) - 1:  # special case to deal time of end character
                     next_chars_t.append(0)
-                    next_chars_t2.append(0)
-                    next_chars_t3.append(0)
-                    next_chars_t4.append(0)
                 else:
                     next_chars_t.append(line_t[i])
-                    next_chars_t2.append(line_t2[i])
-                    next_chars_t3.append(line_t3[i])
-                    next_chars_t4.append(line_t4[i])
         print('nb sequences:', len(sentences))
-
         print('Vectorization...')
         num_features = len(chars) + 5
         print('num features: {}'.format(num_features))
