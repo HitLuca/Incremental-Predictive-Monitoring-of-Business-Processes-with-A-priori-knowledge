@@ -101,7 +101,7 @@ class TrainCFRT:
                   validation_split=0.2,
                   verbose=2,
                   callbacks=[early_stopping, model_checkpoint, lr_reducer],
-                  epochs=10)
+                  epochs=50)
 
     @staticmethod
     def train(log_name, models_folder, folds):
@@ -118,11 +118,13 @@ class TrainCFRT:
         times = []
         times2 = []
         difflist = []
+        array_perc = []
         numlines = 0
         casestarttime = None
         lasteventtime = None
+        #r = 3  # number of time intervals
+        n = 5  # number of percentiles
 
-        r = 3
 
         csvfile = open('../data/final_experiments/%s.csv' % log_name, 'r')
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -137,22 +139,30 @@ class TrainCFRT:
             t2 = datetime.fromtimestamp(time.mktime(t1)) - datetime.fromtimestamp(time.mktime(lastevent))
             tdiff = 86400 * t2.days + t2.seconds
             #else:
-                #tdiff = 0
+             #   tdiff = 0
             difflist.append(tdiff)
             lastevent = t1
 
         difflist = [int(i) for i in difflist]
+        print(difflist)
+        difflist2 = [int(i) for i in difflist]
         maxdiff = max(difflist)
+        print('maxdiff', maxdiff)
         difflist[np.argmax(difflist)] -= 1e-8
         #diff = maxdiff / r
-        difflist.sort()
-        r1 = np.percentile(difflist, 20)
-        r2 = np.percentile(difflist, 40)
-        r3 = np.percentile(difflist, 60)
-        r4 = np.percentile(difflist, 80)
+        p = int(100 / n)
+        difflist2.sort()
 
-        # print(maxdiff)
-        # print(mediandiff)
+        x=0
+        i=0
+
+        while i<=n:
+            print(i)
+            array_perc.append(np.percentile(difflist2, x))
+            x+=p
+            i+=1
+        print(array_perc)
+
         csvfile.seek(0)
         next(spamreader, None)  # skip the headers
         line_index = 0
@@ -177,21 +187,16 @@ class TrainCFRT:
                 numlines += 1
             line += get_unicode_from_int(row[1])
             line_group += get_unicode_from_int(row[3])
-
-            # if (difflist[line_index] / diff) <= r:
-            #     line_time += get_unicode_from_int(int(int(row[4]) / diff))
-            # else:
             #line_time += get_unicode_from_int(int(difflist[line_index] / diff))
-            if difflist[line_index] <= r1:
-                line_time += get_unicode_from_int(0)
-            if r1 < difflist[line_index] < r2:
-                line_time += get_unicode_from_int(1)
-            if r2 < difflist[line_index] < r3:
-                line_time += get_unicode_from_int(2)
-            if r3 < difflist[line_index] < r4:
-                line_time += get_unicode_from_int(3)
+            if difflist[line_index] >= array_perc[n]:
+                line_time += get_unicode_from_int(n-1)
             else:
-                line_time += get_unicode_from_int(4)
+                i = 0
+                while i < n:
+                    if array_perc[i] <= difflist[line_index] < array_perc[i+1]:
+                        line_time += get_unicode_from_int(i)
+                        break
+                    i += 1
             timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(
                 time.mktime(lasteventtime))
             timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(
@@ -211,9 +216,11 @@ class TrainCFRT:
         timeseqs2.append(times2)
         numlines += 1
 
-        divisor = np.mean([item for sublist in timeseqs for item in sublist])
+        print(lines_time)
+
+        divisor = np.max([item for sublist in timeseqs for item in sublist])
         print('divisor: {}'.format(divisor))
-        divisor2 = np.mean([item for sublist in timeseqs2 for item in sublist])
+        divisor2 = np.max([item for sublist in timeseqs2 for item in sublist])
         print('divisor2: {}'.format(divisor2))
 
         elements_per_fold = int(round(numlines / 3))
@@ -310,16 +317,15 @@ class TrainCFRT:
             line += get_unicode_from_int(row[1])
             line_group += get_unicode_from_int(row[3])
             #line_time += get_unicode_from_int(int(difflist[line_index] / diff))
-            if difflist[line_index] <= r1:
-                line_time += get_unicode_from_int(0)
-            if r1 < difflist[line_index] < r2:
-                line_time += get_unicode_from_int(1)
-            if r2 < difflist[line_index] < r3:
-                line_time += get_unicode_from_int(2)
-            if r3 < difflist[line_index] < r4:
-                line_time += get_unicode_from_int(3)
+            if difflist[line_index] >= array_perc[n]:
+                line_time += get_unicode_from_int(n-1)
             else:
-                line_time += get_unicode_from_int(4)
+                i = 0
+                while i < n:
+                    if array_perc[i] <= difflist[line_index] < array_perc[i+1]:
+                        line_time += get_unicode_from_int(i)
+                        break
+                    i += 1
             timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(
                 time.mktime(lasteventtime))
             timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(
@@ -337,7 +343,6 @@ class TrainCFRT:
             lasteventtime = t
             first_line = False
             line_index += 1
-
         # add last case
         lines.append(line)
         lines_group.append(line_group)
@@ -351,8 +356,8 @@ class TrainCFRT:
         elements_per_fold = int(round(numlines / 3))
 
         lines = lines[:-elements_per_fold]
-        lines_group = lines_group[:elements_per_fold]
-        lines_time = lines_time[:elements_per_fold]
+        lines_group = lines_group[:-elements_per_fold]
+        lines_time = lines_time[:-elements_per_fold]
         lines_t = timeseqs[:-elements_per_fold]
         lines_t2 = timeseqs2[:-elements_per_fold]
         lines_t3 = timeseqs3[:-elements_per_fold]

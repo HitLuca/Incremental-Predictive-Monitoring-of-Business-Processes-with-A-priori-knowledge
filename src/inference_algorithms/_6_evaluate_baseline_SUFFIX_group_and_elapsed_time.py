@@ -52,7 +52,6 @@ def run_experiments(log_name, models_folder, fold):
         char_indices_time, \
         divisor, \
         divisor2, \
-        divisor3, \
         predict_size, \
         target_indices_char, \
         target_indices_char_group,\
@@ -118,7 +117,7 @@ def run_experiments(log_name, models_folder, fold):
     with open(output_filename, 'wb') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         spamwriter.writerow(["Prefix length", "Ground truth", "Predicted", "Damerau-Levenshtein", "Jaccard",
-                             "Ground truth times", "Predicted times", "RMSE", "MAE", "Median AE", "Ground Truth Group",
+                             "Ground truth times", "Prefix", "Predicted times", "RMSE", "MAE", "Median AE", "Ground Truth Group",
                              "Predicted Group", "Damerau-Levenshtein Resource", "Ground Truth Elapsed Time",
                              "Predicted Elapsed Time", "Damerau-Levenshtein Elapsed Time"])
         for prefix_size in range(prefix_size_pred_from, prefix_size_pred_to):
@@ -170,8 +169,10 @@ def run_experiments(log_name, models_folder, fold):
                 case_end_time = times2[len(times2)-1]
                 ground_truth_t = case_end_time-ground_truth_t
                 gt_array.append(ground_truth_t)
-                ground_truth_t_string = ''.join(str(times[prefix_size:(predict_size-1)]))
+                ground_truth_t_string = ''.join(str(times[:(predict_size-1)]))
                 ground_truth_t_string = ground_truth_t_string.replace(",", " ")
+                prefix_string = ''.join(str(times[:prefix_size]))
+                prefix_string = prefix_string.replace(',', ' ')
                 predicted = ''
                 predicted_group = ''
                 predicted_elapsed_time = ''
@@ -184,12 +185,18 @@ def run_experiments(log_name, models_folder, fold):
                     y_char = y[0][0]
                     y_group = y[1][0]
                     y_time = y[2][0]
-                    y_t = y[2][0][0]
-                    # print(y_char)
-                    # print(y_group)
-                    #print(y)
-                    #print(y_time)
-                    #print(y_t)
+                    y_t = y[3][0][0]
+                    #print('y',y)
+                    # print('activity', y_char)
+                    # print('resource', y_group)
+                    # print('elapsed time', y[2][0])
+                    # # print('time', y_t)
+                    # print('y1', y[1][0][0])
+                    # print('y2', y[2][0][0])
+                    print('y3', y[3][0])
+                    # print('y3', y[3][1][0])
+                    # print('y3', y[3][2][0])
+                    # print('y3', y[3][3][0])
                     prediction = get_symbol(y_char)  # undo one-hot encoding
                     prediction_group = get_symbol_group(y_group)  # undo one-hot encoding
                     prediction_elapsed_time = get_symbol_time(y_time) # undo one-hot encoding
@@ -232,13 +239,8 @@ def run_experiments(log_name, models_folder, fold):
                     output.append(1 - distance.nlevenshtein(predicted, ground_truth))
                     output.append(1 - distance.jaccard(predicted, ground_truth))
                     output.append(ground_truth_t_string)
+                    output.append(prefix_string)
                     output.append(predicted_time_string)
-                    #output.append(" ")
-                    print('lt ', lt)
-                    print('lp ', lp)
-                    print([times[prefix_size:prefix_size+lp]])
-                    print([pt_array[:lt]])
-                    print(pt_array)
                     output.append(sqrt(metrics.mean_squared_error([times[prefix_size:prefix_size+lp]], [pt_array[:lt]])))
                     output.append(metrics.mean_absolute_error([ground_truth_t], [total_predicted_time]))
                     output.append(metrics.median_absolute_error([ground_truth_t], [total_predicted_time]))

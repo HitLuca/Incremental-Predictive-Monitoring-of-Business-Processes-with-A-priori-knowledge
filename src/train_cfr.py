@@ -253,7 +253,7 @@ class TrainCFR:
         elements_per_fold = int(round(numlines / 3))
 
         lines = lines[:-elements_per_fold]
-        lines_group = lines_group[:elements_per_fold]
+        lines_group = lines_group[:-elements_per_fold]
         lines_t = timeseqs[:-elements_per_fold]
         lines_t2 = timeseqs2[:-elements_per_fold]
         lines_t3 = timeseqs3[:-elements_per_fold]

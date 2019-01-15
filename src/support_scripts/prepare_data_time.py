@@ -42,10 +42,12 @@ def prepare_testing_data(eventlog):
     times3 = []
     times4 = []
     difflist = []
+    array_perc = []
     numlines = 0
     casestarttime = None
     lasteventtime = None
-    r = 3
+    #r = 3  # number of time intervals
+    n = 5  # number of percentiles
 
     for row in spamreader:
         t1 = time.strptime(row[2], "%Y-%m-%d %H:%M:%S")
@@ -56,19 +58,27 @@ def prepare_testing_data(eventlog):
         t2 = datetime.fromtimestamp(time.mktime(t1)) - datetime.fromtimestamp(time.mktime(lastevent))
         tdiff = 86400 * t2.days + t2.seconds
         #else:
-            #tdiff = 0
+           # tdiff = 0
         difflist.append(tdiff)
         lastevent = t1
 
     difflist = [int(i) for i in difflist]
+    difflist2 = [int(i) for i in difflist]
     maxdiff = max(difflist)
     difflist[np.argmax(difflist)] -= 1e-8
-    # diff = maxdiff / r
-    difflist.sort()
-    r1 = np.percentile(difflist, 20)
-    r2 = np.percentile(difflist, 40)
-    r3 = np.percentile(difflist, 60)
-    r4 = np.percentile(difflist, 80)
+    #diff = maxdiff / r
+    p = int(100 / n)
+    difflist2.sort()
+
+    x = 0
+    i = 0
+
+    while i <= n:
+        print(i)
+        array_perc.append(np.percentile(difflist2, x))
+        x += p
+        i += 1
+    print(array_perc)
 
     csvfile.seek(0)
     next(spamreader, None)  # skip the headers
@@ -100,16 +110,15 @@ def prepare_testing_data(eventlog):
         line += get_unicode_from_int(row[1])
         line_group += get_unicode_from_int(row[3])
         #line_time += get_unicode_from_int(int(difflist[line_index] / diff))
-        if difflist[line_index] <= r1:
-            line_time += get_unicode_from_int(0)
-        if r1 < difflist[line_index] < r2:
-            line_time += get_unicode_from_int(1)
-        if r2 < difflist[line_index] < r3:
-            line_time += get_unicode_from_int(2)
-        if r3 < difflist[line_index] < r4:
-            line_time += get_unicode_from_int(3)
+        if difflist[line_index] >= array_perc[n]:
+            line_time += get_unicode_from_int(n - 1)
         else:
-            line_time += get_unicode_from_int(4)
+            i = 0
+            while i < n:
+                if array_perc[i] <= difflist[line_index] < array_perc[i + 1]:
+                    line_time += get_unicode_from_int(i)
+                    break
+                i += 1
         timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(lasteventtime))
         timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(casestarttime))
         timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
@@ -131,11 +140,11 @@ def prepare_testing_data(eventlog):
     timeseqs4.append(times4)
     numlines += 1
 
-    divisor = np.mean([item for sublist in timeseqs for item in sublist])
-    divisor2 = np.mean([item for sublist in timeseqs2 for item in sublist])
-    divisor3 = np.mean(map(lambda x: np.mean(map(lambda y: x[len(x) - 1] - y, x)), timeseqs2))
+    divisor = np.max([item for sublist in timeseqs for item in sublist])
+    divisor2 = np.max([item for sublist in timeseqs2 for item in sublist])
+    #divisor3 = np.mean(map(lambda x: np.mean(map(lambda y: x[len(x) - 1] - y, x)), timeseqs2))
     print(divisor)
-    print(divisor3)
+    #print(divisor3)
 
     elems_per_fold = int(round(numlines / 3))
 
@@ -212,7 +221,6 @@ def prepare_testing_data(eventlog):
         char_indices_time, \
         divisor, \
         divisor2, \
-        divisor3, \
         predict_size, \
         target_indices_char, \
         target_indices_char_group, \
