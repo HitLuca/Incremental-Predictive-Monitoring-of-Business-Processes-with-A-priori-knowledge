@@ -18,6 +18,7 @@ plotly = "*"
 jellyfish = "*"
 statistics = "*"
 tensorflow = "*"
+pyyaml = "==4.2b4"
 
 [requires]
 python_version = "2.7"
