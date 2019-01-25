@@ -6,6 +6,8 @@
         <entryData>
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/data" />
+            <path value="file://$PROJECT_DIR$/output_files" />
+            <path value="file://$PROJECT_DIR$/declare_models" />
           </resourceRoots>
         </entryData>
       </entry>

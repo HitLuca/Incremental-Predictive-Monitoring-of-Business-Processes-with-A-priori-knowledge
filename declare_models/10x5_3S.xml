@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model>
+   <assignment language="ConDec" name="10x5_3S">
+      <activitydefinitions>
+         <activity id="1" name="6" />
+         <activity id="2" name="1" />
+         <activity id="3" name="8" />
+      </activitydefinitions>
+      <constraintdefinitions>
+		 <constraint id="1" mandatory="true">
+            <condition>[A.org:resource=='4'][T.org:resource=='0'][]</condition>
+            <name>response</name>
+            <template>
+               <description>B has to occur at some point in time after A.</description>
+               <display>response</display>
+               <name>response</name>
+               <text></text>
+               <parameters>
+                  <parameter branchable="true" id="1" name="A">
+                     <graphical>
+                        <style number="3" />
+                        <begin fill="true" style="5" />
+                        <middle fill="false" style="0" />
+                        <end fill="false" style="0" />
+                     </graphical>
+                  </parameter>
+                  <parameter branchable="true" id="2" name="B">
+                     <graphical>
+                        <style number="3" />
+                        <begin fill="true" style="2" />
+                        <middle fill="false" style="0" />
+                        <end fill="false" style="0" />
+                     </graphical>
+                  </parameter>
+               </parameters>
+               <statemessages/>
+            </template>
+            <constraintparameters>
+               <parameter templateparameter="1">
+                  <branches>
+                     <branch name="6" />
+                  </branches>
+               </parameter>
+               <parameter templateparameter="2">
+                  <branches>
+                     <branch name="1" />
+                  </branches>
+               </parameter>
+            </constraintparameters>
+         </constraint>
+		 <constraint id="2" mandatory="true">
+            <condition>[A.org:resource=='4'][][]</condition>
+            <name>existence</name>
+            <template>
+               <description>A has to occur at some point in the trace</description>
+               <display>existence</display>
+               <name>existence</name>
+               <text></text>
+               <parameters>
+                  <parameter branchable="true" id="1" name="A">
+                     <graphical>
+                        <style number="3" />
+                        <begin fill="true" style="5" />
+                        <middle fill="false" style="0" />
+                        <end fill="false" style="0" />
+                     </graphical>
+                  </parameter>
+               </parameters>
+               <statemessages/>
+            </template>
+            <constraintparameters>
+               <parameter templateparameter="1">
+                  <branches>
+                     <branch name="6" />
+                  </branches>
+               </parameter>
+            </constraintparameters>
+         </constraint>
+		 <constraint id="3" mandatory="true">
+            <condition>[A.org:resource=='1'][T.org:resource=='2'][]</condition>
+            <name>response</name>
+            <template>
+               <description>B has to occur at some point in time after A.</description>
+               <display>response</display>
+               <name>response</name>
+               <text></text>
+               <parameters>
+                  <parameter branchable="true" id="1" name="A">
+                     <graphical>
+                        <style number="3" />
+                        <begin fill="true" style="5" />
+                        <middle fill="false" style="0" />
+                        <end fill="false" style="0" />
+                     </graphical>
+                  </parameter>
+                  <parameter branchable="true" id="2" name="B">
+                     <graphical>
+                        <style number="3" />
+                        <begin fill="true" style="2" />
+                        <middle fill="false" style="0" />
+                        <end fill="false" style="0" />
+                     </graphical>
+                  </parameter>
+               </parameters>
+               <statemessages/>
+            </template>
+            <constraintparameters>
+               <parameter templateparameter="1">
+                  <branches>
+                     <branch name="8" />
+                  </branches>
+               </parameter>
+               <parameter templateparameter="2">
+                  <branches>
+                     <branch name="1" />
+                  </branches>
+               </parameter>
+            </constraintparameters>
+         </constraint>
+		 <constraint id="4" mandatory="true">
+            <condition>[A.org:resource=='1'][][]</condition>
+            <name>existence</name>
+            <template>
+               <description>A has to occur at some point in the trace</description>
+               <display>existence</display>
+               <name>existence</name>
+               <text></text>
+               <parameters>
+                  <parameter branchable="true" id="1" name="A">
+                     <graphical>
+                        <style number="3" />
+                        <begin fill="true" style="5" />
+                        <middle fill="false" style="0" />
+                        <end fill="false" style="0" />
+                     </graphical>
+                  </parameter>
+               </parameters>
+               <statemessages/>
+            </template>
+            <constraintparameters>
+               <parameter templateparameter="1">
+                  <branches>
+                     <branch name="8" />
+                  </branches>
+               </parameter>
+            </constraintparameters>
+         </constraint>
+		 <constraint id="5" mandatory="true">
+            <condition>[A.org:resource=='3'][T.org:resource=='3'][]</condition>
+            <name>response</name>
+            <template>
+               <description>B has to occur at some point in time after A.</description>
+               <display>response</display>
+               <name>response</name>
+               <text></text>
+               <parameters>
+                  <parameter branchable="true" id="1" name="A">
+                     <graphical>
+                        <style number="3" />
+                        <begin fill="true" style="5" />
+                        <middle fill="false" style="0" />
+                        <end fill="false" style="0" />
+                     </graphical>
+                  </parameter>
+                  <parameter branchable="true" id="2" name="B">
+                     <graphical>
+                        <style number="3" />
+                        <begin fill="true" style="2" />
+                        <middle fill="false" style="0" />
+                        <end fill="false" style="0" />
+                     </graphical>
+                  </parameter>
+               </parameters>
+               <statemessages/>
+            </template>
+            <constraintparameters>
+               <parameter templateparameter="1">
+                  <branches>
+                     <branch name="6" />
+                  </branches>
+               </parameter>
+               <parameter templateparameter="2">
+                  <branches>
+                     <branch name="1" />
+                  </branches>
+               </parameter>
+            </constraintparameters>
+         </constraint>
+		 <constraint id="6" mandatory="true">
+            <condition>[A.org:resource=='0'][][]</condition>
+            <name>existence</name>
+            <template>
+               <description>A has to occur at some point in the trace</description>
+               <display>existence</display>
+               <name>existence</name>
+               <text></text>
+               <parameters>
+                  <parameter branchable="true" id="1" name="A">
+                     <graphical>
+                        <style number="3" />
+                        <begin fill="true" style="5" />
+                        <middle fill="false" style="0" />
+                        <end fill="false" style="0" />
+                     </graphical>
+                  </parameter>
+               </parameters>
+               <statemessages/>
+            </template>
+            <constraintparameters>
+               <parameter templateparameter="1">
+                  <branches>
+                     <branch name="6" />
+                  </branches>
+               </parameter>
+            </constraintparameters>
+         </constraint>
+      </constraintdefinitions>
+      <graphical>
+         <activities/>
+         <constraints/>
+      </graphical>
+   </assignment>
+</model>

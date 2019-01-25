@@ -9,7 +9,9 @@ import os
 
 ascii_offset = 161
 beam_size = 3
-base_folderpath = 'output_files/'
+outputs_folder = '../output_files/'
+data_folder = '../data/'
+declare_models_folder = '../declare_models/'
 epochs = 300
 folds = 3
 validation_split = 0.2
@@ -24,14 +26,15 @@ def get_int_from_unicode(unch):
 
 
 def extract_last_model_checkpoint(log_name, models_folder, fold, model_type):
-    model_filepath = base_folderpath + models_folder + '/' + str(fold) + '/models/' + model_type + '/' + log_name + '/'
+    model_filepath = outputs_folder + models_folder + '/' + str(fold) + '/models/' + model_type + '/' + log_name + '/'
+    print(model_filepath)
     list_of_files = glob.glob(model_filepath + '*.h5')
     latest_file = max(list_of_files, key=os.path.getctime)
     return latest_file
 
 
 def extract_declare_model_filename(log_name):
-    return os.getcwd() + '/declare_models/final_experiments/' + log_name + '.xml'
+    return declare_models_folder + log_name + '.xml'
 
 
 log_settings = {

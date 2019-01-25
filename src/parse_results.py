@@ -3,15 +3,35 @@ import csv
 import numpy as np
 from matplotlib import pyplot as plt
 
+import shared_variables
 from shared_variables import folds
 
 
 class ResultParser:
-    _log_names = ['10x2_1W', '10x2_3W', '10x2_1S', '10x2_3S', '10x5_1W', '10x5_3W', '10x5_1S', '10x5_3S', '10x20_1W',
-                  '10x20_3W', '10x20_1S', '10x20_3S', '5x5_1W', '5x5_3W', '5x5_1S', '5x5_3S', '50x5_1W', '50x5_3W',
-                  '50x5_1S', '50x5_3S']
+    _log_names = [
+        '10x5_1S',
+        # '10x5_1W',
+        # '10x5_3S',
+        # '10x5_3W',
+        '5x5_1W',
+        # '5x5_1S',
+        # '5x5_3W',
+        # '5x5_3S',
+        # '10x20_1W',
+        # '10x20_1S',
+        '10x20_3W',
+        # '10x20_3S',
+        # '10x2_1W',
+        # '10x2_1S',
+        # '10x2_3W',
+        '10x2_3S',
+        '50x5_1W',
+        # '50x5_1S',
+        # '50x5_3W',
+        # '50x5_3S'
+    ]
 
-    _headers = ['E1_CF', 'E1_CFR_1', 'E1_CFR_2', 'E2_CF', 'E2_CFR_1', 'E2_CFR_2', 'E3_CFR_1', 'E3_CFR_2']
+    _headers = ['B1_CF', 'B1_CFR_1', 'B1_CFR_2', 'B2_CF', 'B2_CFR_1', 'B2_CFR_2', 'NEW_CFR_1', 'NEW_CFR_2']
     _metrics = ['baseline', 'LTL', 'declare']
 
     _model_types = ['CF', 'CFR']
@@ -139,14 +159,14 @@ class ResultParser:
                    cmap=plt.cm.seismic)
         plt.yticks(range(len(ResultParser._log_names)), ResultParser._log_names)
         plt.xticks(range(len(ResultParser._headers)), ResultParser._headers, rotation=90)
-        plt.colorbar()
+        # plt.colorbar()
         plt.tight_layout()
         plt.show()
 
     @staticmethod
     def _load_table(folderpath, folds):
         table_folds = []
-        for fold in range(folds):
+        for fold in range(3):
             fold_table = np.zeros(
                 (len(ResultParser._log_names), len(ResultParser._metrics) * len(ResultParser._model_types) * 2))
 
@@ -200,6 +220,6 @@ class ResultParser:
 
 
 if __name__ == "__main__":
-    final_experiments = 'output_files/final_experiments/'
-    folds = 3
-    ResultParser.parse_and_compare_with_reference(final_experiments, 'zero', folds)
+    old_model = shared_variables.outputs_folder + 'old_model/'
+    new_model = shared_variables.outputs_folder + 'new_model/'
+    ResultParser.parse_and_compare_with_reference(new_model, old_model)
