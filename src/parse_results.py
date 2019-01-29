@@ -159,14 +159,13 @@ class ResultParser:
                    cmap=plt.cm.seismic)
         plt.yticks(range(len(ResultParser._log_names)), ResultParser._log_names)
         plt.xticks(range(len(ResultParser._headers)), ResultParser._headers, rotation=90)
-        # plt.colorbar()
         plt.tight_layout()
         plt.show()
 
     @staticmethod
     def _load_table(folderpath, folds):
         table_folds = []
-        for fold in range(3):
+        for fold in range(folds):
             fold_table = np.zeros(
                 (len(ResultParser._log_names), len(ResultParser._metrics) * len(ResultParser._model_types) * 2))
 
