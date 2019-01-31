@@ -137,9 +137,13 @@ log_settings = {
         'prefix_size_pred_from': 6,
         'prefix_size_pred_to': 7
     },
-    'BPI2017_50k': {
-        'formula_strong': " []( ( \"17\" -> <>( \"18\" ) ) )  /\ <>\"17\"",
-        'formula_weak': "<>(\"17\")",
+    'BPI2017_S': {
+        'formula': " []( ( \"17\" -> <>( \"18\" ) ) )  /\ <>\"17\"",
+        'prefix_size_pred_from': 6,
+        'prefix_size_pred_to': 9
+    },
+    'BPI2017_W': {
+        'formula': "<>(\"17\")",
         'prefix_size_pred_from': 6,
         'prefix_size_pred_to': 9
     }

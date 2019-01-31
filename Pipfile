@@ -4,11 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+tensorflow-gpu = "==1.4.0"
 
 [packages]
 keras = "*"
 matplotlib = "*"
-tensorflow-gpu = "==1.4.1"
+tensorflow = "*"
 distance = "*"
 sklearn = "*"
 py4j = "*"
@@ -17,7 +18,6 @@ unicodecsv = "*"
 plotly = "*"
 jellyfish = "*"
 statistics = "*"
-tensorflow = "*"
 pyyaml = "==4.2b4"
 
 [requires]

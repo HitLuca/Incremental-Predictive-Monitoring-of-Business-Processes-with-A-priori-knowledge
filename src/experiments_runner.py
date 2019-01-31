@@ -89,8 +89,13 @@ if __name__ == '__main__':
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--train', action='store_true', help='train without evaluating')
     group.add_argument('--evaluate', action='store_true', help='evaluate without training')
+    group.add_argument('--full_run', action='store_true', help='train and evaluate model')
 
     args = parser.parse_args()
+
+    if args.full_run:
+        args.train = True
+        args.evaluate = True
 
     python_port = args.port + 1
 
