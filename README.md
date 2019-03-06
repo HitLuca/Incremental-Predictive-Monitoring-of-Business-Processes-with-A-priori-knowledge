@@ -42,7 +42,7 @@ Results are saved into the [output_files](output_files) folder.
 
 [shared_variables.py](src/shared_variables.py) contains meta-variables used at inference-time, as well as training/model hyperparameters.
 
-[parse_results.py](src/parse_results.py) parses the results contained in the [results]() folder inside each model run, and plots multiple images/tables that allow quick comparisons.
+[parse_results.py](src/result_parser.py) parses the results contained in the [results]() folder inside each model run, and plots multiple images/tables that allow quick comparisons.
 
 ## Getting started
 This project is intended to be self-contained, so no extra files are required.
@@ -64,4 +64,4 @@ Simply run the [experiment_runner.py](src/experiments_runner.py) script with the
 Simply run the [experiment_runner.py](src/experiments_runner.py) script with the --evaluate flag. If no option is specified the script will train and test automatically the model
 
 #### Elaborating the results
-In order to check improvements between this project and its original implementation, run the  [parse_results.py](src/parse_results.py) script, indicating the folder for the two models before running it.
+In order to check improvements between this project and its original implementation, run the  [parse_results.py](src/result_parser.py) script, indicating the folder for the two models before running it.

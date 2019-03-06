@@ -1,4 +1,7 @@
+import argparse
+import ast
 import csv
+import json
 
 import numpy as np
 from enum import Enum
@@ -208,14 +211,14 @@ class ResultParser:
         if folderpath == 'reference':
             return self._reference_table[sorted(self._all_log_names.index(i) for i in self._log_names)]
         elif folderpath == 'zeros':
-            return np.zeros((len(log_names), len(self._metrics) * len(self._model_types) * 2 - 2))
+            return np.zeros((len(self._log_names), len(self._metrics) * len(self._model_types) * 2 - 2))
         else:
             table_folds = []
             for fold in range(folds):
                 fold_table = np.zeros(
-                    (len(log_names), len(self._metrics) * len(self._model_types) * 2 - 2))
+                    (len(self._log_names), len(self._metrics) * len(self._model_types) * 2 - 2))
 
-                for log_name in log_names:
+                for log_name in self._log_names:
                     for metric in self._metrics:
                         for model_type in self._model_types:
                             if metric == 'declare' and model_type == 'CF':
@@ -237,34 +240,20 @@ class ResultParser:
 
 
 if __name__ == "__main__":
-    log_names = [
-        '10x2_1W',
-        # '10x2_3W',
-        # '10x2_1S',
-        '10x2_3S',
-        # '10x5_1W',
-        # '10x5_3W',
-        '10x5_1S',
-        # '10x5_3S',
-        # '10x20_1W',
-        '10x20_3W',
-        # '10x20_1S',
-        # '10x20_3S',
-        '5x5_1W',
-        # '5x5_3W',
-        # '5x5_1S',
-        # '5x5_3S',
-        '50x5_1W',
-        # '50x5_3W',
-        # '50x5_1S',
-        # '50x5_3S'
-        'BPI2017_W',
-        'BPI2017_S'
-    ]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--logs', help='input logs')
+    parser.add_argument('--target_model', default='new_model', help='target model name')
+    parser.add_argument('--reference_model', default='old_model', help='reference model name')
+    parser.add_argument('--table_caption', default='New - Old model', help='final latex caption')
+    args = parser.parse_args()
 
-    result_parser = ResultParser(log_names)
+    result_parser = ResultParser(args.logs.replace('[', '').replace(']', '').split(','))
 
-    old_model = shared_variables.outputs_folder + 'old_model/'
-    new_model = shared_variables.outputs_folder + 'new_model/'
+    models_dict = {
+        'old_model': shared_variables.outputs_folder + 'old_model/',
+        'new_model': shared_variables.outputs_folder + 'new_model/',
+        'reference': 'reference',
+        'zeros': 'zeros'
+    }
 
-    result_parser.compare_results(new_model, reference=old_model, table_caption='New - Old model')
+    result_parser.compare_results(models_dict[args.target_model], reference=models_dict[args.reference_model], table_caption=args.table_caption)
