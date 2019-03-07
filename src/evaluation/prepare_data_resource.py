@@ -160,7 +160,8 @@ def prepare_testing_data(eventlog):
 
 
 # selects traces verified by a declare model
-def select_declare_verified_traces(server_replayer, path_to_declare_model_file, lines, lines_id, lines_group, lines_t, lines_t2,
+def select_declare_verified_traces(server_replayer, path_to_declare_model_file, lines, lines_id, lines_group, lines_t,
+                                   lines_t2,
                                    lines_t3, lines_t4, prefix=0):
     # select only lines with formula verified
     lines_v = []

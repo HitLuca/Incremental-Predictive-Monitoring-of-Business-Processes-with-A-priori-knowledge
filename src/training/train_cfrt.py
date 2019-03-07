@@ -16,19 +16,16 @@ from __future__ import print_function, division
 
 import copy
 import csv
-import os
 import time
-from collections import Counter
 from datetime import datetime
 from itertools import izip
 
 import numpy as np
-from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.layers import Input, Dropout, BatchNormalization, LeakyReLU
 from keras.layers.core import Dense
 from keras.layers.recurrent import LSTM
 from keras.models import Model
-from keras.optimizers import Nadam
 
 import shared_variables
 from shared_variables import get_unicode_from_int, epochs, validation_split, folds
@@ -335,8 +332,9 @@ class TrainCFRT:
         sentences_t3 = []
         sentences_t4 = []
         next_chars_t = []
-        for line, line_group, line_time, line_t, line_t2, line_t3, line_t4 in izip(lines, lines_group, lines_time, lines_t, lines_t2, lines_t3,
-                                                                        lines_t4):
+        for line, line_group, line_time, line_t, line_t2, line_t3, line_t4 in izip(lines, lines_group, lines_time,
+                                                                                   lines_t, lines_t2, lines_t3,
+                                                                                   lines_t4):
             for i in range(0, len(line), step):
                 if i == 0:
                     continue
@@ -384,11 +382,11 @@ class TrainCFRT:
                 for y in chars_time:
                     if y == sentence_time[t]:
                         X[i, t + leftpad, len(chars) + len(chars_group) + char_indices_time[y]] = 1
-                X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time)] = t + 1
-                X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 1] = sentence_t[t] / divisor
-                X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 2] = sentence_t2[t] / divisor2
-                X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 3] = sentence_t3[t] / 86400
-                X[i, t + leftpad, len(chars) + len(chars_group)+len(chars_time) + 4] = sentence_t4[t] / 7
+                X[i, t + leftpad, len(chars) + len(chars_group) + len(chars_time)] = t + 1
+                X[i, t + leftpad, len(chars) + len(chars_group) + len(chars_time) + 1] = sentence_t[t] / divisor
+                X[i, t + leftpad, len(chars) + len(chars_group) + len(chars_time) + 2] = sentence_t2[t] / divisor2
+                X[i, t + leftpad, len(chars) + len(chars_group) + len(chars_time) + 3] = sentence_t3[t] / 86400
+                X[i, t + leftpad, len(chars) + len(chars_group) + len(chars_time) + 4] = sentence_t4[t] / 7
             for c in target_chars:
                 if c == next_chars[i]:
                     y_a[i, target_char_indices[c]] = 1 - softness
@@ -407,6 +405,7 @@ class TrainCFRT:
             y_t[i] = next_t / divisor
 
         for fold in range(folds):
-            model = TrainCFRT._build_model(maxlen, num_features, target_chars, target_chars_time, target_chars_group, use_old_model)
+            model = TrainCFRT._build_model(maxlen, num_features, target_chars, target_chars_time, target_chars_group,
+                                           use_old_model)
             checkpoint_name = create_checkpoints_path(log_name, models_folder, fold, 'CFRT')
             TrainCFRT._train_model(model, checkpoint_name, X, y_a, y_t, y_y, y_g)

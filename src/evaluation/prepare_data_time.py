@@ -6,18 +6,19 @@ The script is expanded to the
 """
 
 from __future__ import division
-from Queue import PriorityQueue
-from datetime import datetime
-from itertools import izip
-
-import shared_variables
-from shared_variables import get_unicode_from_int
 
 import copy
 import csv
 import re
 import time
+from Queue import PriorityQueue
+from datetime import datetime
+from itertools import izip
+
 import numpy as np
+
+import shared_variables
+from shared_variables import get_unicode_from_int
 
 
 def prepare_testing_data(eventlog):
@@ -182,34 +183,35 @@ def prepare_testing_data(eventlog):
     predict_size = maxlen
 
     return lines, \
-        lines_id, \
-        lines_group, \
-        lines_time, \
-        lines_t, \
-        lines_t2, \
-        lines_t3, \
-        lines_t4, \
-        maxlen, \
-        chars, \
-        chars_group, \
-        chars_time, \
-        char_indices, \
-        char_indices_group, \
-        char_indices_time, \
-        divisor, \
-        divisor2, \
-        divisor3, \
-        predict_size, \
-        target_indices_char, \
-        target_indices_char_group, \
-        target_indices_char_time, \
-        target_char_indices, \
-        target_char_indices_group, \
-        target_char_indices_time
+           lines_id, \
+           lines_group, \
+           lines_time, \
+           lines_t, \
+           lines_t2, \
+           lines_t3, \
+           lines_t4, \
+           maxlen, \
+           chars, \
+           chars_group, \
+           chars_time, \
+           char_indices, \
+           char_indices_group, \
+           char_indices_time, \
+           divisor, \
+           divisor2, \
+           divisor3, \
+           predict_size, \
+           target_indices_char, \
+           target_indices_char_group, \
+           target_indices_char_time, \
+           target_char_indices, \
+           target_char_indices_group, \
+           target_char_indices_time
 
 
 # selects traces verified by a declare model
-def select_declare_verified_traces(server_replayer, path_to_declare_model_file, lines, lines_id, lines_group, lines_time, lines_t, lines_t2,
+def select_declare_verified_traces(server_replayer, path_to_declare_model_file, lines, lines_id, lines_group,
+                                   lines_time, lines_t, lines_t2,
                                    lines_t3, lines_t4, prefix=0):
     # select only lines with formula verified
     lines_v = []
@@ -221,15 +223,16 @@ def select_declare_verified_traces(server_replayer, path_to_declare_model_file, 
     lines_t3_v = []
     lines_t4_v = []
     for line, line_id, line_group, line_time, times, times2, times3, times4 in izip(lines,
-                                                                         lines_id,
-                                                                         lines_group,
-                                                                         lines_time,
-                                                                         lines_t,
-                                                                         lines_t2,
-                                                                         lines_t3,
-                                                                         lines_t4):
+                                                                                    lines_id,
+                                                                                    lines_group,
+                                                                                    lines_time,
+                                                                                    lines_t,
+                                                                                    lines_t2,
+                                                                                    lines_t3,
+                                                                                    lines_t4):
 
-        if server_replayer.verify_with_elapsed_time(path_to_declare_model_file, line_id, line, line_group, line_time, times4, prefix):
+        if server_replayer.verify_with_elapsed_time(path_to_declare_model_file, line_id, line, line_group, line_time,
+                                                    times4, prefix):
             lines_v.append(line)
             lines_id_v.append(line_id)
             lines_group_v.append(line_group)
@@ -243,7 +246,8 @@ def select_declare_verified_traces(server_replayer, path_to_declare_model_file, 
 
 
 # selects traces verified by LTL formula
-def select_formula_verified_traces(server_replayer, lines, lines_id, lines_group, lines_time, lines_t, lines_t2, lines_t3,
+def select_formula_verified_traces(server_replayer, lines, lines_id, lines_group, lines_time, lines_t, lines_t2,
+                                   lines_t3,
                                    lines_t4, formula, prefix=0):
     # select only lines with formula verified
     lines_v = []
@@ -256,13 +260,13 @@ def select_formula_verified_traces(server_replayer, lines, lines_id, lines_group
     lines_t4_v = []
 
     for line, line_id, line_group, line_time, times, times2, times3, times4 in izip(lines,
-                                                                         lines_id,
-                                                                         lines_group,
-                                                                         lines_time,
-                                                                         lines_t,
-                                                                         lines_t2,
-                                                                         lines_t3,
-                                                                         lines_t4):
+                                                                                    lines_id,
+                                                                                    lines_group,
+                                                                                    lines_time,
+                                                                                    lines_t,
+                                                                                    lines_t2,
+                                                                                    lines_t3,
+                                                                                    lines_t4):
         if server_replayer.verify_formula_as_compliant(line, formula, prefix):
             lines_v.append(line)
             lines_id_v.append(line_id)
@@ -355,15 +359,15 @@ def create_queue(activities, resources, times):
     for activity_index in range(len(activities)):
         for resource_index in range(len(resources)):
             for time_index in range(len(times)):
-                queue.put((-(np.log(activities[activity_index])+np.log(resources[resource_index])+np.log(times[time_index])),
-                          [activity_index, resource_index, time_index]))
+                queue.put((-(np.log(activities[activity_index]) + np.log(resources[resource_index]) + np.log(
+                    times[time_index])),
+                           [activity_index, resource_index, time_index]))
     return queue
 
 
 def standardize_list(list1, list2):
     len1 = float(len(list1))
     len2 = float(len(list2))
-    weight = len2/len1
+    weight = len2 / len1
     standardized_list = map(lambda x: weight * x, list2)
     return standardized_list
-

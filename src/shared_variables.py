@@ -98,30 +98,30 @@ log_settings = {
         'prefix_size_pred_to': 7
     },
     '10x2_1W': {
-            'formula': "<>(\"2\")",
-            'prefix_size_pred_from': 3,
-            'prefix_size_pred_to': 7
-        },
+        'formula': "<>(\"2\")",
+        'prefix_size_pred_from': 3,
+        'prefix_size_pred_to': 7
+    },
     '10x2_1S': {
-            'formula': " []( ( \"6\" -> <>( \"2\" ) ) )  /\ <>\"6\"",
-            'prefix_size_pred_from': 3,
-            'prefix_size_pred_to': 7
-        },
+        'formula': " []( ( \"6\" -> <>( \"2\" ) ) )  /\ <>\"6\"",
+        'prefix_size_pred_from': 3,
+        'prefix_size_pred_to': 7
+    },
     '10x2_3W': {
-            'formula': "<>(\"8\") /\ <>(\"7\")",
-            'prefix_size_pred_from': 5,
-            'prefix_size_pred_to': 7
-        },
+        'formula': "<>(\"8\") /\ <>(\"7\")",
+        'prefix_size_pred_from': 5,
+        'prefix_size_pred_to': 7
+    },
     '10x2_3S': {
-            'formula': " []( ( \"9\" -> <>( \"3\" ) ) )  /\ <>\"9\" /\  []( ( \"7\" -> <>( \"3\" ) ) )  /\ <>\"7\"",
-            'prefix_size_pred_from': 3,
-            'prefix_size_pred_to': 7
-        },
+        'formula': " []( ( \"9\" -> <>( \"3\" ) ) )  /\ <>\"9\" /\  []( ( \"7\" -> <>( \"3\" ) ) )  /\ <>\"7\"",
+        'prefix_size_pred_from': 3,
+        'prefix_size_pred_to': 7
+    },
     '50x5_1W': {
-            'formula': "<>(\"7\")",
-            'prefix_size_pred_from': 3,
-            'prefix_size_pred_to': 7
-        },
+        'formula': "<>(\"7\")",
+        'prefix_size_pred_from': 3,
+        'prefix_size_pred_to': 7
+    },
     '50x5_1S': {
         'formula': " []( ( \"7\" -> <>( \"8\" ) ) )  /\ <>\"7\"",
         'prefix_size_pred_from': 3,

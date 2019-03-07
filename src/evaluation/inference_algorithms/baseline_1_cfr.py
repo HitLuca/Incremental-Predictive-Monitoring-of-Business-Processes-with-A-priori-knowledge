@@ -9,16 +9,17 @@ The script is expanded to also use the Resource attribute
 from __future__ import division
 
 import csv
+import os
 import time
 from collections import Counter
 from datetime import datetime, timedelta
 from itertools import izip
-import os
 
 import distance
 import numpy as np
 from keras.models import load_model
 from sklearn import metrics
+
 import shared_variables
 from evaluation.prepare_data_resource import select_declare_verified_traces, prepare_testing_data
 

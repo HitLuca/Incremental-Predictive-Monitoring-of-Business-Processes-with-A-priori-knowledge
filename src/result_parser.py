@@ -1,7 +1,5 @@
 import argparse
-import ast
 import csv
-import json
 
 import numpy as np
 from enum import Enum
@@ -69,6 +67,7 @@ class ResultParser:
           0.754, 0.718, 0.846, 0.697, 0.735, 0.870, 0.811, 0.000, 0.000],
          [0.649, 0.679, 0.763, 0.833, 0.790, 0.824, 0.792, 0.761, 0.575, 0.738, 0.704, 0.000, 0.785,
           0.758, 0.763, 0.679, 0.687, 0.742, 0.875, 0.815, 0.000, 0.000]]).T
+
     # </editor-fold>
 
     def __init__(self, log_names):
@@ -256,4 +255,5 @@ if __name__ == "__main__":
         'zeros': 'zeros'
     }
 
-    result_parser.compare_results(models_dict[args.target_model], reference=models_dict[args.reference_model], table_caption=args.table_caption)
+    result_parser.compare_results(models_dict[args.target_model], reference=models_dict[args.reference_model],
+                                  table_caption=args.table_caption)

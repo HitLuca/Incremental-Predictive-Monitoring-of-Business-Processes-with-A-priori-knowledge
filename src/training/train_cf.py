@@ -13,7 +13,6 @@ from __future__ import print_function, division
 
 import copy
 import csv
-import os
 import time
 from datetime import datetime
 from itertools import izip

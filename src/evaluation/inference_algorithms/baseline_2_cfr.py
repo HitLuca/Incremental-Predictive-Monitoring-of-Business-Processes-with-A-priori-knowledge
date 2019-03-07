@@ -189,8 +189,8 @@ def run_experiments(server_replayer, log_name, models_folder, fold):
 
                         if not found_satisfying_constraint:
                             if server_replayer.verify_formula_as_compliant(current_prediction_premis.cropped_line,
-                                                           formula,
-                                                           prefix_size):
+                                                                           formula,
+                                                                           prefix_size):
                                 # the formula verified and we can just finish the predictions
                                 # beam size is 1 because predict only sequence of events
                                 current_beam_size = 1

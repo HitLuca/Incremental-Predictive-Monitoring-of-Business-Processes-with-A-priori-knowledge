@@ -19,9 +19,9 @@ from keras.models import load_model
 from sklearn import metrics
 
 import shared_variables
-from shared_variables import get_int_from_unicode
 from evaluation.prepare_data_resource import amplify, select_declare_verified_traces, \
     encode, prepare_testing_data, create_queue, adjust_probabilities
+from shared_variables import get_int_from_unicode
 
 
 def run_experiments(server_replayer, log_name, models_folder, fold):
@@ -232,11 +232,11 @@ def run_experiments(server_replayer, log_name, models_folder, fold):
                             # end of case was just predicted, therefore, stop predicting further into the future
                             if temp_prediction == '!':
                                 if server_replayer.verify_with_data(declare_model_filename,
-                                                    current_trace_id,
-                                                    temp_cropped_line,
-                                                    temp_cropped_line_group,
-                                                    temp_cropped_times,
-                                                    prefix_size):
+                                                                    current_trace_id,
+                                                                    temp_cropped_line,
+                                                                    temp_cropped_line_group,
+                                                                    temp_cropped_times,
+                                                                    prefix_size):
                                     stop_symbol_probability_amplifier_current = 1
                                     # print '! predicted, end case'
                                     queue_next_steps = PriorityQueue()

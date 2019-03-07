@@ -1,6 +1,6 @@
-from evaluation.server_replayer import ServerReplayer
 from evaluation.inference_algorithms import baseline_1_cf, baseline_1_cfr, baseline_1_cfrt, baseline_2_cf, \
     baseline_2_cfr, new_method_cfr
+from evaluation.server_replayer import ServerReplayer
 from shared_variables import folds
 
 
