@@ -11,28 +11,31 @@ from training.train_cfrt import TrainCFRT
 
 class ExperimentRunner:
     _log_names = [
-        '10x5_1S',
-        '10x5_1W',
-        '10x5_3S',
-        '10x5_3W',
-        '5x5_1W',
-        '5x5_1S',
-        '5x5_3W',
-        '5x5_3S',
-        '10x20_1W',
-        '10x20_1S',
-        '10x20_3W',
-        '10x20_3S',
         '10x2_1W',
-        '10x2_1S',
         '10x2_3W',
+        '10x2_1S',
         '10x2_3S',
+        '10x5_1W',
+        '10x5_3W',
+        '10x5_1S',
+        '10x5_3S',
+        '10x20_1W',
+        '10x20_3W',
+        '10x20_1S',
+        '10x20_3S',
+        '5x5_1W',
+        '5x5_3W',
+        '5x5_1S',
+        '5x5_3S',
         '50x5_1W',
-        '50x5_1S',
         '50x5_3W',
-        '50x5_3S',
-        'BPI2017_S',
-        'BPI2017_W'
+        '50x5_1S',
+        '50x5_3S'
+        'BPI2017_W',
+        'BPI2017_S'
+        'BPI2012_W'
+        'BPI2012_W_2'
+        'BPI2012_S'
     ]
 
     def __init__(self, use_old_model, use_time, port, python_port, train, evaluate):

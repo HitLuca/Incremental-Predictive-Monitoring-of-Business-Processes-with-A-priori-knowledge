@@ -196,7 +196,9 @@ class TrainCF:
         for i in range(len(lines)):
             many = many + len(lines[i])
 
-        print("average length of the trace: ", many / len(lines))
+        get_lengths = lambda x : [len(a) for a in x]
+        print("mean length of the trace: ", np.mean(get_lengths(lines)))
+        print("median length of the trace: ", np.median(get_lengths(lines)))
         print("number of traces: ", len(lines))
 
         fold1 = lines[:elements_per_fold]

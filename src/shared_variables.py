@@ -146,5 +146,20 @@ log_settings = {
         'formula': "<>(\"17\")",
         'prefix_size_pred_from': 6,
         'prefix_size_pred_to': 9
-    }
+    },
+    'BPI2012_S': {
+        'formula': " []( ( \"3\" -> <>( \"5\" ) ) )  /\ <>\"3\"",
+        'prefix_size_pred_from': 2,
+        'prefix_size_pred_to': 5
+    },
+    'BPI2012_W': {
+        'formula': "<>(\"6\")",
+        'prefix_size_pred_from': 4,
+        'prefix_size_pred_to': 8
+    },
+    'BPI2012_W_2': {
+        'formula': "<>(\"3\")",
+        'prefix_size_pred_from': 2,
+        'prefix_size_pred_to': 5
+    },
 }

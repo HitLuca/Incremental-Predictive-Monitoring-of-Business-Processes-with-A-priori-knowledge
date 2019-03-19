@@ -9,12 +9,15 @@ import shared_variables
 from shared_variables import folds
 
 
-class HighlightTypes(Enum):
-    ROW_SCORE = 0
-    IMPROVEMENT_SCORE = 1
-
-
 class ResultParser:
+    class HighlightTypes(Enum):
+        ROW_SCORE = 0
+        IMPROVEMENT_SCORE = 1
+
+    class ColumnTypes(Enum):
+        CF = 0
+        R = 1
+
     _all_log_names = [
         '10x2_1W',
         '10x2_3W',
@@ -70,6 +73,11 @@ class ResultParser:
 
     # </editor-fold>
 
+    _column_colors = {
+        ColumnTypes.CF: 'C0C0C0',
+        ColumnTypes.R: 'E8E8E8'
+    }
+
     def __init__(self, log_names):
         self._log_names = log_names
 
@@ -100,7 +108,8 @@ class ResultParser:
 
     def _populate_table(self, table, scores, log_name, metric, model_type):
         row = self._log_names.index(log_name)
-        column = self._metrics.index(metric) * len(self._model_types) * 2 + self._model_types.index(model_type) * len(
+        column = ResultParser._metrics.index(metric) * len(
+            self._model_types) * 2 + self._model_types.index(model_type) * len(
             self._model_types)
 
         if metric == 'declare':
@@ -142,15 +151,17 @@ class ResultParser:
         print('\\end{table}')
 
     @staticmethod
-    def _print_score(score, reference_score, highlight_type):
-        if highlight_type == HighlightTypes.ROW_SCORE:
+    def _print_score(score, reference_score, highlight_type, column_type):
+        column_color = ResultParser._column_colors[column_type]
+
+        if highlight_type == ResultParser.HighlightTypes.ROW_SCORE:
             if score == reference_score:
-                print('\\cellcolor[HTML]{C0C0C0}\\textbf{%.3f}' % score),
+                print('\\cellcolor[HTML]{%s}\\textbf{%.3f}' % (column_color, score)),
             else:
                 print('%.3f' % score),
-        elif highlight_type == HighlightTypes.IMPROVEMENT_SCORE:
+        elif highlight_type == ResultParser.HighlightTypes.IMPROVEMENT_SCORE:
             if score > 0:
-                print('\\cellcolor[HTML]{C0C0C0}\\textbf{%.3f}' % score),
+                print('\\cellcolor[HTML]{%s}\\textbf{%.3f}' % (column_color, score)),
             else:
                 print('%.3f' % score),
         else:
@@ -165,9 +176,9 @@ class ResultParser:
             print(log_name.replace('_', '\_') + ' & '),
             for j, score in enumerate(populated_table[i]):
                 if j % 2 == 0:
-                    self._print_score(score, cf_maximums[i], highlight_type)
+                    self._print_score(score, cf_maximums[i], highlight_type, ResultParser.ColumnTypes.CF)
                 else:
-                    self._print_score(score, r_maximums[i], highlight_type)
+                    self._print_score(score, r_maximums[i], highlight_type, ResultParser.ColumnTypes.R)
 
                 if j != populated_table.shape[1] - 1:
                     print('&'),
@@ -176,29 +187,28 @@ class ResultParser:
 
         self._print_latex_table_footer(table_caption)
 
-    def _show_comparison_image(self, populated_table, reference_table):
+    def _show_comparison_image(self, target_table, reference_table):
+        improvement_percentage = (1.0 * np.count_nonzero(target_table > reference_table) / np.count_nonzero(
+            target_table)) * 100.0
 
-        improvement_percentage = (1.0 * np.count_nonzero(populated_table > reference_table) / np.count_nonzero(
-            populated_table)) * 100.0
-
-        populated_indexes = np.where(populated_table > 0)
-        mean_improvement = float(np.mean(populated_table[populated_indexes] - reference_table[populated_indexes]))
-        sum_improvement = float(np.sum(populated_table[populated_indexes] - reference_table[populated_indexes]))
+        populated_indexes = np.where(target_table > 0)
+        mean_improvement = float(np.mean(target_table[populated_indexes] - reference_table[populated_indexes]))
+        sum_improvement = float(np.sum(target_table[populated_indexes] - reference_table[populated_indexes]))
 
         plt.subplots(1, 2)
         plt.subplot(1, 2, 1)
         plt.title('better performance (%.2f' % improvement_percentage + '%)')
-        binary_image = np.zeros(populated_table.shape)
-        binary_image[populated_table == 0] = -1.0
-        binary_image[populated_table > reference_table] = 1.0
+        binary_image = np.zeros(target_table.shape)
+        binary_image[target_table == 0] = -1.0
+        binary_image[target_table > reference_table] = 1.0
         plt.imshow(binary_image, cmap='hot')
         plt.yticks(range(len(self._log_names)), self._log_names)
         plt.xticks(range(len(self._headers)), self._headers, rotation=90)
 
         plt.subplot(1, 2, 2)
         plt.title('comparison (mean:%.2f, sum:%.2f' % (mean_improvement, sum_improvement) + ')')
-        gradient_image = populated_table - reference_table
-        gradient_image[populated_table == 0] = 0
+        gradient_image = target_table - reference_table
+        gradient_image[target_table == 0] = 0
         plt.imshow(gradient_image, vmin=-1, vmax=1,
                    cmap=plt.cm.seismic)
         plt.yticks(range(len(self._log_names)), self._log_names)
@@ -234,7 +244,7 @@ class ResultParser:
         target_table = self._load_table(target)
         reference_table = self._load_table(reference)
 
-        self._show_comparison_image(target_table, reference_table)
+        # self._show_comparison_image(target_table, reference_table)
         self._print_latex_table(target_table - reference_table, highlight_type, table_caption)
 
 
@@ -251,6 +261,7 @@ if __name__ == "__main__":
     models_dict = {
         'old_model': shared_variables.outputs_folder + 'old_model/',
         'new_model': shared_variables.outputs_folder + 'new_model/',
+        'new_model_2': shared_variables.outputs_folder + 'new_model_2/',
         'reference': 'reference',
         'zeros': 'zeros'
     }

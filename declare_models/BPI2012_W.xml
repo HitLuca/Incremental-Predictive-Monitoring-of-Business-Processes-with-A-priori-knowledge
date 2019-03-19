@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model>
-   <assignment language="ConDec" name="BPI 2017 WEAK">
+   <assignment language="ConDec" name="BPI 2012 WEAK">
       <activitydefinitions>
-         <activity id="1" name="10" />
+         <activity id="1" name="6" />
       </activitydefinitions>
       <constraintdefinitions>
 		 <constraint id="1" mandatory="true">
-            <condition>[A.org:resource=='40'][][]</condition>
+            <condition>[A.org:resource=='112'][][]</condition>
             <name>existence</name>
             <template>
                <description>A has to occur at some point in the trace</description>
@@ -28,7 +28,7 @@
             <constraintparameters>
                <parameter templateparameter="1">
                   <branches>
-                     <branch name="10" />
+                     <branch name="6" />
                   </branches>
                </parameter>
             </constraintparameters>
