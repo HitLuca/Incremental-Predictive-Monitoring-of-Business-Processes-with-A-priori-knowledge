@@ -125,7 +125,8 @@ class ResultParser:
         print('\\centering')
         print('\\begin{tabular}{|l||c|c|c|c||c|c|c|c||c|c|}')
         print('\\hline')
-        print('& \\multicolumn{4}{|c||}{\\textbf{baseline}} & '
+        print('\\textit{Method $\\rightarrow$} & '
+              '\\multicolumn{4}{|c||}{\\textbf{baseline}} & '
               '\\multicolumn{4}{|c||}{\\textbf{LTL}} & '
               '\\multicolumn{2}{|c|}{\\textbf{declare}} \\\\')
         print('\\hline')
@@ -144,10 +145,11 @@ class ResultParser:
         print('\\hline\\hline')
 
     @staticmethod
-    def _print_latex_table_footer(table_caption):
+    def _print_latex_table_footer(table_caption, table_label):
         print('\\hline')
         print('\\end{tabular}')
         print('\\caption{' + table_caption + '}')
+        print('\\label{' + table_label + '}')
         print('\\end{table}')
 
     @staticmethod
@@ -167,7 +169,7 @@ class ResultParser:
         else:
             print('%.3f' % score),
 
-    def _print_latex_table(self, populated_table, highlight_type, table_caption):
+    def _print_latex_table(self, populated_table, highlight_type, table_caption, table_label):
         cf_maximums = np.max(populated_table[:, 0::2], 1)
         r_maximums = np.max(populated_table[:, 1::2], 1)
 
@@ -185,7 +187,7 @@ class ResultParser:
                 else:
                     print('\\\\')
 
-        self._print_latex_table_footer(table_caption)
+        self._print_latex_table_footer(table_caption, table_label)
 
     def _show_comparison_image(self, target_table, reference_table):
         improvement_percentage = (1.0 * np.count_nonzero(target_table > reference_table) / np.count_nonzero(
@@ -240,12 +242,13 @@ class ResultParser:
             populated_table = np.mean(table_folds, axis=0)
             return populated_table
 
-    def compare_results(self, target, reference='zeros', highlight_type=HighlightTypes.ROW_SCORE, table_caption=''):
+    def compare_results(self, target, reference='zeros', highlight_type=HighlightTypes.ROW_SCORE, table_caption='',
+                        table_label=''):
         target_table = self._load_table(target)
         reference_table = self._load_table(reference)
 
         # self._show_comparison_image(target_table, reference_table)
-        self._print_latex_table(target_table - reference_table, highlight_type, table_caption)
+        self._print_latex_table(target_table - reference_table, highlight_type, table_caption, table_label)
 
 
 if __name__ == "__main__":
@@ -253,7 +256,8 @@ if __name__ == "__main__":
     parser.add_argument('--logs', help='input logs')
     parser.add_argument('--target_model', default='new_model', help='target model name')
     parser.add_argument('--reference_model', default='old_model', help='reference model name')
-    parser.add_argument('--table_caption', default='New - Old model', help='final latex caption')
+    parser.add_argument('--table_caption', default='', help='final latex caption')
+    parser.add_argument('--table_label', default='', help='final latex label')
     args = parser.parse_args()
 
     result_parser = ResultParser(args.logs.replace('[', '').replace(']', '').split(','))
@@ -267,4 +271,4 @@ if __name__ == "__main__":
     }
 
     result_parser.compare_results(models_dict[args.target_model], reference=models_dict[args.reference_model],
-                                  table_caption=args.table_caption)
+                                  table_caption=args.table_caption, table_label=args.table_label)
