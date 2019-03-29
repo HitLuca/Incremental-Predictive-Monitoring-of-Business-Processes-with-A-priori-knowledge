@@ -22,7 +22,7 @@ from shared_variables import get_unicode_from_int
 
 
 def prepare_testing_data(eventlog):
-    csvfile = open('../data/final_experiments/%s.csv' % eventlog, 'r')
+    csvfile = open('../data2/final_experiments/%s.csv' % eventlog, 'r')
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
     next(spamreader, None)  # skip the headers
 

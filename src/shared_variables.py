@@ -35,7 +35,7 @@ log_settings = {
     '10x5_1S': {
         'formula': " []( ( \"6\" -> <>( \"3\" ) ) )  /\ <>\"6\" ",
         'prefix_size_pred_from': 3,
-        'prefix_size_pred_to': 7
+        'prefix_size_pred_to': 5
     },
     '10x5_1W': {
         'formula': "<>(\"6\")",
@@ -54,7 +54,7 @@ log_settings = {
     },
     '5x5_1W': {
         'formula': "<>(\"3\")",
-        'prefix_size_pred_from': 5,
+        'prefix_size_pred_from': 2,
         'prefix_size_pred_to': 6
     },
     '5x5_1S': {
@@ -132,13 +132,28 @@ log_settings = {
         'prefix_size_pred_from': 6,
         'prefix_size_pred_to': 7
     },
-    'BPI2017_50k': {
+    'BPI2017': {
         'formula_strong': " []( ( \"17\" -> <>( \"18\" ) ) )  /\ <>\"17\"",
         'formula_weak': "<>(\"17\")",
         'prefix_size_pred_from': 6,
         'prefix_size_pred_to': 9
     },
     'Hospital_log': {
+        'formula': " []( ( \"7\" -> <>( \"8\" ) ) )  /\ <>\"7\"",
+        'prefix_size_pred_from': 3,
+        'prefix_size_pred_to': 7
+    },
+    'SepsisCases_log': {
+        'formula': " []( ( \"7\" -> <>( \"8\" ) ) )  /\ <>\"7\"",
+        'prefix_size_pred_from': 3,
+        'prefix_size_pred_to': 7
+    },
+    'SepsisCases_log_big': {
+        'formula': " []( ( \"7\" -> <>( \"8\" ) ) )  /\ <>\"7\"",
+        'prefix_size_pred_from': 3,
+        'prefix_size_pred_to': 7
+    },
+    'BPI2012': {
         'formula': " []( ( \"7\" -> <>( \"8\" ) ) )  /\ <>\"7\"",
         'prefix_size_pred_from': 3,
         'prefix_size_pred_to': 7

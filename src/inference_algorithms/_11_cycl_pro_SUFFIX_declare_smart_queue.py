@@ -186,7 +186,7 @@ def run_experiments(log_name, models_folder, fold):
                                 group = map(lambda x: str(get_int_from_unicode(x)),
                                             current_prediction_premis.cropped_line_group[prefix_size:])
 
-                                print 'changed beam size  ' + str(activity) + '  ' + str(group)
+                                # print 'changed beam size  ' + str(activity) + '  ' + str(group)
                                 current_prediction_premis.probability_of = 0.0
                                 current_beam_size = 1
                                 # overwrite new queue

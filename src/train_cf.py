@@ -81,7 +81,7 @@ class TrainCF:
                   validation_split=0.2,
                   verbose=2,
                   callbacks=[early_stopping, model_checkpoint],
-                  epochs=300)
+                  epochs=10)
 
     @staticmethod
     def _load_dataset(log_name):
@@ -91,7 +91,7 @@ class TrainCF:
         current_case_start_time = None
         last_event_time = None
 
-        csvfile = open('../data/final_experiments/%s.csv' % log_name, 'r')
+        csvfile = open('../data2/final_experiments/%s.csv' % log_name, 'r')
         csv_reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         next(csv_reader, None)
 
@@ -138,7 +138,7 @@ class TrainCF:
         case_start_time = None
         last_event_time = None
 
-        csvfile = open('../data/final_experiments/%s.csv' % log_name, 'r')
+        csvfile = open('../data2/final_experiments/%s.csv' % log_name, 'r')
         csv_reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         next(csv_reader, None)  # skip the headers
 
@@ -207,7 +207,7 @@ class TrainCF:
         char_indices = dict((c, i) for i, c in enumerate(chars))
         target_char_indices = dict((c, i) for i, c in enumerate(target_chars))
 
-        csvfile = open('../data/final_experiments/%s.csv' % log_name, 'r')
+        csvfile = open('../data2/final_experiments/%s.csv' % log_name, 'r')
         csv_reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         next(csv_reader, None)  # skip the headers
         last_case = ''

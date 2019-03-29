@@ -3,12 +3,12 @@
    <assignment language="ConDec" name="10x5_3W">
       <activitydefinitions>
          <activity id="1" name="4" />
-         <activity id="2" name="1" />
-         <activity id="3" name="3" />
+         <activity id="2" name="3" />
+         <activity id="3" name="2" />
       </activitydefinitions>
       <constraintdefinitions>
 		 <constraint id="1" mandatory="true">
-            <condition>[A.org:resource=='4'][][]</condition>
+            <condition>[A.elapsedtime:category=='2'][][]</condition>
             <name>existence</name>
             <template>
                <description>A has to occur at some point in the trace</description>
@@ -36,7 +36,7 @@
             </constraintparameters>
          </constraint>
 		 <constraint id="2" mandatory="true">
-            <condition>[A.org:resource=='3'][][]</condition>
+            <condition>[A.elapsedtime:category=='9'][][]</condition>
             <name>existence</name>
             <template>
                <description>A has to occur at some point in the trace</description>
@@ -63,7 +63,7 @@
                </parameter>
             </constraintparameters>
          </constraint>
-      </constraintdefinitions>
+     </constraintdefinitions>
       <graphical>
          <activities/>
          <constraints/>

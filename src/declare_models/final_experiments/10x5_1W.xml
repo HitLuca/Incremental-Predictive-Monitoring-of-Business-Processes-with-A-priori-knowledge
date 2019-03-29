@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model>
-   <assignment language="ConDec" name="10x5_1W">
+   <assignment language="ConDec" name="generated log 4">
       <activitydefinitions>
-         <activity id="1" name="6" />
+         <activity id="1" name="7" />
       </activitydefinitions>
       <constraintdefinitions>
-		 <constraint id="1" mandatory="true">
-            <condition>[A.org:resource=='3'][][]</condition>
+         	 <constraint id="1" mandatory="true">
+            <condition>[A.elapsedtime:category=='4'][][]</condition>
             <name>existence</name>
             <template>
                <description>A has to occur at some point in the trace</description>
@@ -28,7 +28,7 @@
             <constraintparameters>
                <parameter templateparameter="1">
                   <branches>
-                     <branch name="6" />
+                     <branch name="7" />
                   </branches>
                </parameter>
             </constraintparameters>

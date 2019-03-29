@@ -87,7 +87,7 @@ class TrainCFR:
                   validation_split=0.2,
                   verbose=2,
                   callbacks=[early_stopping, model_checkpoint],
-                  epochs=300)
+                  epochs=10)
 
     @staticmethod
     def train(log_name, models_folder, folds):
@@ -105,7 +105,7 @@ class TrainCFR:
         casestarttime = None
         lasteventtime = None
 
-        csvfile = open('../data/final_experiments/%s.csv' % log_name, 'r')
+        csvfile = open('../data2/final_experiments/%s.csv' % log_name, 'r')
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         next(spamreader, None)  # skip the headers
 
@@ -182,7 +182,7 @@ class TrainCFR:
         char_indices_group = dict((c, i) for i, c in enumerate(chars_group))
         target_char_indices_group = dict((c, i) for i, c in enumerate(target_chars_group))
 
-        csvfile = open('../data/final_experiments/%s.csv' % log_name, 'r')
+        csvfile = open('../data2/final_experiments/%s.csv' % log_name, 'r')
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         next(spamreader, None)  # skip the headers
         lastcase = ''

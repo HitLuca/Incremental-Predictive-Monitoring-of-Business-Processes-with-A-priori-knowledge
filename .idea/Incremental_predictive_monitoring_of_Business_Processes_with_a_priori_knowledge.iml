@@ -7,5 +7,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Pipenv (Incremental_predictive_monitoring_of_Business_Processes_with_a_priori_knowledge)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="Incremental-Predictive-Monitoring-of-Business-Processes-with-A-priori-knowledge" />
+    <orderEntry type="module" module-name="Incremental-Predictive-Monitoring-of-Business-Processes-with-A-priori-knowledge" />
   </component>
 </module>

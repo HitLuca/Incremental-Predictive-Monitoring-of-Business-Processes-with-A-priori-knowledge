@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../Incremental-Predictive-Monitoring-of-Business-Processes-with-A-priori-knowledge/.idea/Incremental-Predictive-Monitoring-of-Business-Processes-with-A-priori-knowledge.iml" filepath="$PROJECT_DIR$/../Incremental-Predictive-Monitoring-of-Business-Processes-with-A-priori-knowledge/.idea/Incremental-Predictive-Monitoring-of-Business-Processes-with-A-priori-knowledge.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Incremental_predictive_monitoring_of_Business_Processes_with_a_priori_knowledge.iml" filepath="$PROJECT_DIR$/.idea/Incremental_predictive_monitoring_of_Business_Processes_with_a_priori_knowledge.iml" />
     </modules>
   </component>

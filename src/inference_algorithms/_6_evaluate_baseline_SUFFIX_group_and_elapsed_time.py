@@ -124,24 +124,25 @@ def run_experiments(log_name, models_folder, fold):
             print("prefix size: " + str(prefix_size))
 
             lines_s,\
-                lines_id_s,\
-                lines_group_s, \
-                lines_time_s, \
-                lines_t_s, \
-                lines_t2_s, \
-                lines_t3_s,\
-                lines_t4_s = select_declare_verified_traces(declare_model_filename,
-                                                            lines,
-                                                            lines_id,
-                                                            lines_group,
-                                                            lines_time,
-                                                            lines_t,
-                                                            lines_t2,
-                                                            lines_t3,
-                                                            lines_t4,
-                                                            prefix_size)
+            lines_id_s,\
+            lines_group_s, \
+            lines_time_s, \
+            lines_t_s, \
+            lines_t2_s, \
+            lines_t3_s,\
+            lines_t4_s = select_declare_verified_traces(declare_model_filename,
+                                                        lines,
+                                                        lines_id,
+                                                        lines_group,
+                                                        lines_time,
+                                                        lines_t,
+                                                        lines_t2,
+                                                        lines_t3,
+                                                        lines_t4,
+                                                        prefix_size)
 
             print("formulas verified: " + str(len(lines_s)) + " out of : " + str(len(lines)))
+            time.sleep(20)
             pt_array = []
             for line, line_id, line_group, line_time, times, times2, times3, times4 in izip(lines_s,
                                                                                              lines_id_s,
@@ -155,9 +156,9 @@ def run_experiments(log_name, models_folder, fold):
                 cropped_line = ''.join(line[:prefix_size])
                 cropped_line_group = ''.join(line_group[:prefix_size])
                 cropped_line_time = ''.join(line_time[:prefix_size])
-                print(times)
+                #print(times)
                 cropped_times = times[:prefix_size]
-                print(cropped_times)
+                #print(cropped_times)
                 cropped_times3 = times3[:prefix_size]
                 cropped_times4 = times4[:prefix_size]
                 if len(times2) < prefix_size:
@@ -193,7 +194,7 @@ def run_experiments(log_name, models_folder, fold):
                     # # print('time', y_t)
                     # print('y1', y[1][0][0])
                     # print('y2', y[2][0][0])
-                    print('y3', y[3][0])
+                    # print('y3', y[3][0])
                     # print('y3', y[3][1][0])
                     # print('y3', y[3][2][0])
                     # print('y3', y[3][3][0])

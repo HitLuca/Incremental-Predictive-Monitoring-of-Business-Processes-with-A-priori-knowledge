@@ -20,7 +20,7 @@ import numpy as np
 
 
 def prepare_testing_data(eventlog):
-    csvfile = open('../data/final_experiments/%s.csv' % eventlog, 'r')
+    csvfile = open('../data2/final_experiments/%s.csv' % eventlog, 'r')
     spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
     next(spamreader, None)  # skip the headers
 
@@ -54,11 +54,11 @@ def prepare_testing_data(eventlog):
         if row[0] != lastcase:
             lastevent = t1
             lastcase = row[0]
-        #if row[1] != '0':
-        t2 = datetime.fromtimestamp(time.mktime(t1)) - datetime.fromtimestamp(time.mktime(lastevent))
-        tdiff = 86400 * t2.days + t2.seconds
-        #else:
-           # tdiff = 0
+        if row[1] != '0':
+            t2 = datetime.fromtimestamp(time.mktime(t1)) - datetime.fromtimestamp(time.mktime(lastevent))
+            tdiff = 86400 * t2.days + t2.seconds
+        else:
+            tdiff = 0
         difflist.append(tdiff)
         lastevent = t1
 
@@ -121,7 +121,8 @@ def prepare_testing_data(eventlog):
                 i += 1
         timesincelastevent = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(lasteventtime))
         timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(time.mktime(casestarttime))
-        timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
+        # timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
+        timediff = difflist[line_index]
         timediff2 = 86400 * timesincecasestart.days + timesincecasestart.seconds
         times.append(timediff)
         times2.append(timediff2)

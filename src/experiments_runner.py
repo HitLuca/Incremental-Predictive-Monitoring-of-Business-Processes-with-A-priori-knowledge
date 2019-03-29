@@ -11,27 +11,31 @@ from train_cfrt import TrainCFRT
 
 class ExperimentRunner:
     _log_names = [
-        '10x5_1S',
+        #'10x5_1S',
         #'10x5_1W',
         # '10x5_3S',
-        # '10x5_3W',
+        #'10x5_3W',
         #'5x5_1W',
-        '5x5_1S',
-        # '5x5_3W',
-        # '5x5_3S',
-        # '10x20_1W',
-        '10x20_1S',
+        #'5x5_1S',
+        #'5x5_3W',
+        #'5x5_3S',
+        #'10x20_1W',
+        #'10x20_1S',
         #'10x20_3W',
         # '10x20_3S',
         #'10x2_1W',
         #'10x2_1S',
-        # '10x2_3W',
+        #'10x2_3W',
         # '10x2_3S',
-         '50x5_1W',
+        #'50x5_1W',
         # '50x5_1S',
-        # '50x5_3W',
+        #'50x5_3W',
         # '50x5_3S',
-        #'Hospital_log'
+        #'Hospital_log',
+        'BPI2017',
+        #'SepsisCases_log'
+        #'BPI2012'
+        #'SepsisCases_log_big'
     ]
 
     _models_folder = 'final_experiments'
@@ -50,8 +54,8 @@ class ExperimentRunner:
                 Evaluator.evaluate_time(log_name, ExperimentRunner._models_folder, folds)
 
         else:
-            TrainCF.train(log_name, ExperimentRunner._models_folder, folds)
-            TrainCFR.train(log_name, ExperimentRunner._models_folder, folds)
+            #TrainCF.train(log_name, ExperimentRunner._models_folder, folds)
+            #TrainCFR.train(log_name, ExperimentRunner._models_folder, folds)
             try:
                 Evaluator.evaluate_all(log_name, ExperimentRunner._models_folder, folds)
             except:

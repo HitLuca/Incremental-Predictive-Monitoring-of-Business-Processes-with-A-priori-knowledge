@@ -65,7 +65,7 @@ class TrainCFRT:
                             'group_output': 'categorical_crossentropy',
                             'elapsed_time_output': 'categorical_crossentropy',
                             'time_output': 'mae'},
-                      #loss_weights=[1, 0, 0, 0],
+                      #loss_weights=[1, 1, 1, 0],
                       optimizer=opt)
         return model
 
@@ -101,7 +101,7 @@ class TrainCFRT:
                   validation_split=0.2,
                   verbose=2,
                   callbacks=[early_stopping, model_checkpoint, lr_reducer],
-                  epochs=50)
+                  epochs=30)
 
     @staticmethod
     def train(log_name, models_folder, folds):
@@ -126,7 +126,7 @@ class TrainCFRT:
         n = 5  # number of percentiles
 
 
-        csvfile = open('../data/final_experiments/%s.csv' % log_name, 'r')
+        csvfile = open('../data2/final_experiments/%s.csv' % log_name, 'r')
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         next(spamreader, None)  # skip the headers
 
@@ -135,11 +135,11 @@ class TrainCFRT:
             if row[0] != lastcase:
                 lastevent = t1
                 lastcase = row[0]
-            #if row[1] != '0':
-            t2 = datetime.fromtimestamp(time.mktime(t1)) - datetime.fromtimestamp(time.mktime(lastevent))
-            tdiff = 86400 * t2.days + t2.seconds
-            #else:
-             #   tdiff = 0
+            if row[1] != '0':
+                t2 = datetime.fromtimestamp(time.mktime(t1)) - datetime.fromtimestamp(time.mktime(lastevent))
+                tdiff = 86400 * t2.days + t2.seconds
+            else:
+                tdiff = 0
             difflist.append(tdiff)
             lastevent = t1
 
@@ -201,7 +201,8 @@ class TrainCFRT:
                 time.mktime(lasteventtime))
             timesincecasestart = datetime.fromtimestamp(time.mktime(t)) - datetime.fromtimestamp(
                 time.mktime(casestarttime))
-            timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
+            #timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
+            timediff = difflist[line_index]
             timediff2 = 86400 * timesincecasestart.days + timesincecasestart.seconds
             times.append(timediff)
             times2.append(timediff2)
@@ -268,7 +269,7 @@ class TrainCFRT:
         char_indices_time = dict((c, i) for i, c in enumerate(chars_time))
         target_char_indices_time = dict((c, i) for i, c in enumerate(target_chars_time))
 
-        csvfile = open('../data/final_experiments/%s.csv' % log_name, 'r')
+        csvfile = open('../data2/final_experiments/%s.csv' % log_name, 'r')
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         next(spamreader, None)  # skip the headers
         lastcase = ''
@@ -332,7 +333,8 @@ class TrainCFRT:
                 time.mktime(casestarttime))
             midnight = datetime.fromtimestamp(time.mktime(t)).replace(hour=0, minute=0, second=0, microsecond=0)
             timesincemidnight = datetime.fromtimestamp(time.mktime(t)) - midnight
-            timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
+            # timediff = 86400 * timesincelastevent.days + timesincelastevent.seconds
+            timediff = difflist[line_index]
             timediff2 = 86400 * timesincecasestart.days + timesincecasestart.seconds
             timediff3 = timesincemidnight.seconds
             timediff4 = datetime.fromtimestamp(time.mktime(t)).weekday()

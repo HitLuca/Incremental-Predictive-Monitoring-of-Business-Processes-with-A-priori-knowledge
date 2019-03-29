@@ -7,7 +7,7 @@
       </activitydefinitions>
       <constraintdefinitions>
 		 <constraint id="1" mandatory="true">
-            <condition>[A.org:resource=='2'][T.org:resource=='1'][]</condition>
+            <condition>[A.elapsedtime:category=='9'][T.elapsedtime:category=='1'][]</condition>
             <name>response</name>
             <template>
                <description>B has to occur at some point in time after A.</description>
@@ -48,7 +48,7 @@
             </constraintparameters>
          </constraint>
 		 <constraint id="2" mandatory="true">
-            <condition>[A.org:resource=='2'][][]</condition>
+            <condition>[A.elapsedtime:category=='9'][][]</condition>
             <name>existence</name>
             <template>
                <description>A has to occur at some point in the trace</description>
